@@ -1,0 +1,384 @@
+%%
+%% This is file `mucproc.cls',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% mucproc.dtx  (with options: `class')
+%% 
+%% This is a generated file.
+%% 
+%% Copyright (C) 2017 by Marei Peischl <TeX@mareipeischl.de>
+%% 
+%% This file may be distributed and/or modified under the conditions of
+%% the LaTeX Project Public License, either version 1.3 of this license
+%% or (at your option) any later version.  The latest version of this
+%% license is in:
+%% 
+%%    http://www.latex-project.org/lppl.txt
+%% 
+%% and version 1.3 or later is part of all distributions of LaTeX version
+%% 2005/12/01 or later.
+%% 
+\def\mucprocVersion{0.9}
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{mucproc}
+    [2017/02/19 v\mucprocVersion conference proceedings for the German MUC-conference]
+\RequirePackage{expl3}
+\ExplSyntaxOn
+\bool_new:N \g_MUC@compatibility_mode
+\@ifpackagelater{expl3}{2015/09/07}{
+\bool_gset_false:N \g_MUC@compatibility_mode
+}{
+\msg_new:nnn {mucproc}{compatibility}{Your~ LaTeX-Distribution~ seems~ to~ be~ outdated.\\\\
+    Enabling~ compatibility~ Mode.\\\\
+    Some~ features~ won't~ be~ available.
+    }
+    \msg_warning:nn {mucproc}{compatibility}
+\bool_gset_true:N \g_MUC@compatibility_mode
+}
+
+\RequirePackage{xparse}
+\RequirePackage{scrbase}
+\DefineFamily{MUC}
+\DefineFamilyMember{MUC}
+\bool_new:N \g_MUC@pdfa_bool
+\FamilyBoolKey{MUC}{anonymous}{MUC@anonymous}
+\FamilyBoolKey{MUC}{forcefinal}{MUC@final}
+\FamilyBoolKey{MUC}{headline}{MUC@headline}
+\FamilyBoolKey{MUC}{copyrightinfo}{MUC@copyrightinfo}
+\FamilyBoolKey{MUC}{pagestyle}{MUC@pagestyle}
+\MUC@headlinetrue
+\MUC@copyrightinfotrue
+\MUC@pagestyletrue
+
+\FamilyProcessOptions{MUC}
+\ifMUC@headline
+\else
+    \ifMUC@copyrightinfo
+    \else
+        \MUC@pagestylefalse
+    \fi
+\fi
+\ifMUC@final
+    \bool_if:NTF \g_MUC@compatibility_mode {
+        \msg_new:nnn {mucproc} {compatibilty-final-error} {forcefinal~ is~ not~ possible~ in~ compatibilty~ mode.\\\\
+        Update~ your~ TeX~ distribution~ and retry!}
+        \msg_error:nn {mucproc} {compatibilty-final-error}
+
+    }{
+    \clist_new:N \l_MUC@globalopts_clist
+
+    \msg_new:nnn {mucproc} {force-final} {forcefinal~ option~ is~ enabled.~ Ignoring~ all~ global~ complementary~ options.}
+    \msg_warning:nn {mucproc} {force-final}
+    \msg_new:nnn {mucproc} {remove-draft}{forcefinal~ enabled:~ The~ global~ Option~ #1~ is~ ignored,~ because~ it~ seems~ to~ activate draft~ mode!}
+
+    \exp_args:Nx \clist_map_inline:nn {\@classoptionslist} {
+     \tl_if_in:nnTF {#1} {draft}
+            {\msg_warning:nnx {mucproc} {remove-draft} {#1}}
+            {\clist_put_right:Nn  \l_MUC@globalopts_clist {#1}}
+        \tl_if_in:nnTF {#1} {final}
+            {\tl_if_in:nnTF {#1} {false}
+                {\msg_warning:nnx {mucproc} {remove-draft} {#1}}
+                {\clist_put_right:Nn  \l_MUC@globalopts_clist {#1}}
+            }
+            {\clist_put_right:Nn  \l_MUC@globalopts_clist {#1}}
+    }
+
+    \edef\@classoptionslist{\clist_use:Nn \l_MUC@globalopts_clist {,}}
+    \bool_gset_true:N \g_MUC@pdfa_bool
+    \MUC@anonymousfalse
+    }
+\fi
+
+\newcommand*{\@fontsizefilebase}{mucfontsize}
+\PassOptionsToClass{fontsize=10pt,abstract=true,parskip=full,twoside=semi,headsepline}{scrartcl}
+\LoadClass{scrartcl}
+\setparsizes{0pt}{7pt plus 7 pt}{1em plus 1 fill}
+\raggedbottom
+\RequirePackage{graphicx}% including picture material
+
+\RequirePackage{babel}% language settings
+
+\PassOptionsToPackage{babel}{csquotes}%context sensitive quotation facilities
+\bbl@frenchspacing
+\RequirePackage{csquotes}
+
+\RequirePackage{geometry}% setup margins
+\geometry{paper=a4paper,top=4.8cm, bottom=5.7cm,left=3.8cm,right=4cm,headheight=12pt}
+\geometry{headsep=\dimexpr1cm-\headheight\relax}
+
+
+\PassOptionsToPackage{backend=biber}{biblatex}
+\PassOptionsToPackage{citestyle=authoryear-comp}{biblatex}
+\PassOptionsToPackage{bibstyle=apa}{biblatex}
+\RequirePackage{biblatex}
+\DeclareLanguageMapping{american}{american-apa}
+\DeclareLanguageMapping{ngerman}{ngerman-apa}
+\renewcaptionname{ngerman}{\refname}{Literaturverzeichnis}
+
+\AtEveryBibitem{%
+  \ifboolexpr{test {\ifentrytype{article}} and not test {\iffieldundef{doi}}}
+    {\clearfield{number}}
+    {}%
+}
+
+\renewcommand*{\nameyeardelim}{\addcomma\space}
+\bool_new:N \g_MUC@fontspec_bool
+\bool_if:NTF \g_MUC@compatibility_mode {
+\expandafter\ifx\csname pdfmatch\endcsname\relax
+    \else
+      \PassOptionsToPackage{utf8}{inputenc}
+      \RequirePackage{inputenc}
+\fi
+    \bool_gset_false:N \g_MUC@fontspec_bool
+}{
+\sys_if_engine_luatex:TF {
+        \bool_gset_true:N \g_MUC@fontspec_bool
+    }{
+    \sys_if_engine_xetex:TF{
+            \bool_gset_true:N \g_MUC@fontspec_bool
+    }{
+    \sys_if_engine_pdftex:T {
+            \bool_gset_false:N \g_MUC@fontspec_bool
+    \PassOptionsToPackage{utf8}{inputenc}
+    \RequirePackage{inputenc}
+        }
+        }
+    }
+}
+\cs_new:Nn \MUC@font_Fallback: {
+\PassOptionsToPackage{T1}{fontenc}
+\RequirePackage{fontenc}
+    \IfFileExists{txfonts.sty}{\RequirePackage{txfonts}}{}
+}
+
+\if_bool:N \g_MUC@fontspec_bool
+\RequirePackage{fontspec}
+\fontspec_font_if_exist:nTF {Times~ New~ Roman}{\setmainfont{Times~ New~ Roman}}{
+\MUC@font_Fallback:
+}
+\else:
+\MUC@font_Fallback:
+\fi:
+
+\if_bool:N \g_MUC@pdfa_bool
+    \PassOptionsToPackage{a-1b}{pdfx}
+    \RequirePackage{pdfx}
+    \hypersetup{hidelinks}
+    \iow_new:N \MUC@xmpdata_stream
+    \iow_open:Nn \MUC@xmpdata_stream {\jobname.xmpdata}
+    \tl_new:N \g_MUC@xmp_title
+    \tl_new:N \g_MUC@xmp_author
+
+    \newcommand*{\MUC@passTitleData}{
+    \begingroup
+    \def\newline{}
+    \def\\{}
+    \xdef\MUC@author{\@author}
+    \xdef\MUC@title{\@title}
+    \cs_set:Npn \and {\exp_not:n {\exp_not:N \sep}}
+    \tl_gset:Nx \g_MUC@xmp_title {\@title}
+    \tl_gset:Nx \g_MUC@xmp_author {\@author}
+    \endgroup
+    \iow_now:Nx \MUC@xmpdata_stream
+     {
+     \exp_not:N \Title{\tl_use:N \g_MUC@xmp_title}
+     ^^J
+     \exp_not:N \Author{\tl_use:N \g_MUC@xmp_author}
+     ^^J
+     \exp_not:N \Org{Mensch~ und~ Computer~ 2017}
+     }
+    }
+\else:
+    \msg_new:nnn {mucproc} {no-pdfa}{The~ mucproc~ class~ won't~ create~ PDF/A-mode.}
+    \msg_info:nn {mucproc} {no-pdfa}
+    \newcommand*{\MUC@passTitleData}{
+        \begingroup
+     \def\newline{}
+     \def\\{}
+     \xdef\MUC@author{\@author}
+     \xdef\MUC@title{\@title}
+        \endgroup
+    }
+\fi:
+\ExplSyntaxOff
+\ExplSyntaxOn
+\clist_new:N \l_MUCproc@thanks_clist
+\cs_set:Nn \MUCproc@thanks:nn {\clist_gput_right:Nn \l_MUCproc@thanks_clist {{#2\def\@thefnmark{#1}\@makefnmark}}}
+\NewDocumentCommand{\MUCproc@thanks}{om}{
+    \footnotemark%
+    \IfNoValueF{#1}{
+        \prop_if_exist:NF \g_MUC@InstRef_prop {\prop_new:N \g_MUC@InstRef_prop}
+        \prop_put:Nnx \g_MUC@InstRef_prop {#1} {\thefootnote}
+        }
+    \exp_args:Nx \MUCproc@thanks:nn {\thefootnote}{#2}
+    }
+
+\msg_new:nnn {mucproc} {thanks-label-missing} {
+    No~ institute~ labeled~ '#1'.\\\\
+    Add~ a~ label~ using~ the~ optional~ argument~ of~ the~ \thanks~ command.
+    }
+
+\NewDocumentCommand\MUCproc@thanksref{m}{
+    \prop_if_in:NnTF \g_MUC@InstRef_prop {#1} {
+    \def\@thefnmark{\prop_item:Nn \g_MUC@InstRef_prop {#1}}\@makefnmark
+    }
+    {\msg_error:nn {mucproc} {thanks-label-missing}}
+}
+
+\newcommand*\typeset@MUCproc@thanks {\clist_use:Nn \l_MUCproc@thanks_clist {\rule{0pt}{0pt}\\}}
+
+\renewcommand*{\maketitle}{
+\begingroup
+\DeclareExpandableDocumentCommand{\thanks}{om}{}
+\def\thanksref##1{}
+\def\and{\unskip,~\ignorespaces}
+\MUC@passTitleData
+\let\titlepage@restore\relax
+\renewcommand*\thefootnote{\@arabic\c@footnote}
+\let\thanks\MUCproc@thanks
+\let\thanksref\MUCproc@thanksref
+\global\@topnum=\z@
+\setparsizes{\z@}{\z@}{\z@\@plus 1fil}\par@updaterelative
+\null
+\vskip 41pt
+{\usekomafont{title}{\Huge \@title \par}}%
+    {\ifx\@subtitle\@empty\else\vskip .5em\usekomafont{subtitle}\Large\@subtitle\par\fi}%
+    \vskip 7pt
+{%
+\usekomafont{author}{%
+\lineskip .5em%
+\@author
+\par
+}%
+}%
+\par
+\vskip 8pt
+\bool_if:NTF \g_MUC@compatibility_mode
+    {\thispagestyle{empty}}
+    {\thispagestyle{MUC@titlepagestyle}}
+\typeset@MUCproc@thanks
+\par
+\vspace{8pt}
+\endgroup
+\setcounter{footnote}{0}%
+\bool_if:NT \g_MUC@compatibility_mode {
+\let\thanks\relax
+\let\maketitle\relax
+\let\@maketitle\relax
+\global\let\@thanks\@empty
+\global\let\@author\@empty
+\global\let\@date\@empty
+\global\let\@title\@empty
+\global\let\@subtitle\@empty
+\global\let\@extratitle\@empty
+\global\let\@titlehead\@empty
+\global\let\@subject\@empty
+\global\let\@publishers\@empty
+\global\let\@uppertitleback\@empty
+\global\let\@lowertitleback\@empty
+\global\let\@dedication\@empty
+\global\let\author\relax
+\global\let\title\relax
+\global\let\extratitle\relax
+\global\let\titlehead\relax
+\global\let\subject\relax
+\global\let\publishers\relax
+\global\let\uppertitleback\relax
+\global\let\lowertitleback\relax
+\global\let\dedication\relax
+\global\let\date\relax
+}
+\global\let\and\relax
+\global\let\thanksref\relax
+}
+
+\newcaptionname{ngerman}{\MUCanonymousauthor}{Anonymisierte Fassung}
+\newcaptionname{english}{\MUCanonymousauthor}{anonymous version}
+\ifMUC@anonymous
+    \def\@author{Anonymisierte Fassung}
+    \def\author#1\relax
+    \RequirePackage{comment}
+    \excludecomment{authoraddendum}
+\else
+    \NewDocumentEnvironment{authoraddendum}{d<>om}{
+        \par
+        \IfNoValueTF{#2}{
+        {\usekomafont{authoraddendum}#3}\par\medskip
+        }{
+        \begin{minipage}[t]{3cm}
+        \vspace{0pt}
+        \IfNoValueTF{#1}{
+            \includegraphics[width=\linewidth]{#2}
+        }{
+            \includegraphics[#1]{#2}
+        }
+        \end{minipage}\hspace{.5cm}%
+        \begin{minipage}[t]{\dimexpr\linewidth-3.5cm\relax}
+        \vspace{0pt}
+        {\usekomafont{authoraddendum}#3}\par\medskip%
+        }
+        \usekomafont{authoraddendum}
+        }{
+        \IfNoValueF{#2}{\end{minipage}}
+        \par
+        }
+\fi
+
+\reverse_if:N  \if_bool:N \g_MUC@compatibility_mode
+\newcommand*{\MUC@sectionnumberbox}[1]{\makebox[19pt][l]{#1\autodot}}
+\renewcommand*{\sectionformat}{\MUC@sectionnumberbox{\thesection}}
+\renewcommand*{\subsectionformat}{\MUC@sectionnumberbox{\thesubsection}}
+\renewcommand*{\subsubsectionformat}{\MUC@sectionnumberbox{\thesubsubsection}}
+\RedeclareSectionCommand[afterskip=1.5ex plus .2ex, beforeskip=-3.6ex plus -1ex minus -.2ex]{section}
+\RedeclareSectionCommand[afterskip=.5ex plus .2ex, beforeskip=-1ex plus -1ex minus -.2ex]{subsection}
+\RedeclareSectionCommand[afterskip=.5ex plus .2ex, beforeskip=-1ex plus -1ex minus -.2ex]{subsubsection}
+\RedeclareSectionCommand[afterskip=1em, beforeskip=1ex plus 1ex minus .2ex]{paragraph}
+\RedeclareSectionCommand[afterskip=1em, beforeskip=1ex plus 1ex minus .2ex]{subparagraph}
+\setkomafont{disposition}{}
+\setkomafont{title}{}
+\setkomafont{author}{\large}
+\setkomafont{section}{\LARGE}
+\setkomafont{subsection}{\Large}
+\setkomafont{caption}{\footnotesize\itshape}
+\setkomafont{captionlabel}{\usekomafont{caption}}
+\newkomafont{abstractcontent}{\small}
+\newkomafont{abstract}{\normalsize\bfseries}
+\newkomafont{authoraddendum}{\small}
+\renewenvironment{abstract}{\setparsizes{0pt}{4pt}{0pt plus 1 fill}{\usekomafont{abstract}%
+    \abstractname}\par
+    \usekomafont{abstractcontent}}{}
+
+\ifMUC@pagestyle
+    \ExplSyntaxOff
+    \usepackage{scrlayer-scrpage}
+    \ifMUC@copyrightinfo
+        \DeclareNewLayer[align=tl,area={\dimexpr 1in + \hoffset + \oddsidemargin\relax}{\dimexpr\paperheight-3.9cm\relax}{\textwidth}{2cm},contents={
+         \setlength{\fboxrule}{.7bp}%
+         \setlength{\fboxsep}{6.5pt}%
+         \fbox{\hspace*{.8pt}\parbox[t][\dimexpr2cm-2\fboxsep-2\fboxrule\relax][t]{\dimexpr\textwidth-2\fboxsep-2\fboxrule-1.6pt\relax}{%
+         Platzhalter für DOI und ggf. Copyright Text. (Bitte nicht entfernen).\par
+         \vspace{7pt}
+         Name, Vorname (2017): Titel. Tagungsband Mensch und Computer 2017. Gesellschaft für Informatik. DOI: xxxxxx}%
+        }}]{copyright}
+        \DeclareNewPageStyleByLayers{MUC@titlepagestyle}{copyright}
+    \else
+        \DeclareNewPageStyleAlias{MUC@titlepagestyle}{empty}
+    \fi
+    \clearpairofpagestyles
+    \ifMUC@headline
+        \lohead{\MUC@title}
+        \rehead{\csname MUC@author\endcsname}
+    \fi
+    \setkomafont{pagehead}{\normalfont}
+    \setkomafont{pagefoot}{}
+    \ExplSyntaxOn
+%%%%}
+\fi
+\fi:
+\ExplSyntaxOff
+\endinput
+%%
+%% End of file `mucproc.cls'.
