@@ -20,18 +20,19 @@
 %% and version 1.3 or later is part of all distributions of LaTeX version
 %% 2005/12/01 or later.
 %% 
-\def\mucprocVersion{0.9}
+\def\mucprocVersion{0.10}
 
-\NeedsTeXFormat{LaTeX2e}
+\NeedsTeXFormat{LaTeX2e}[2014/05/01]
 \ProvidesClass{mucproc}
-    [2017/02/19 v\mucprocVersion conference proceedings for the German MUC-conference]
+    [2017/02/20 v\mucprocVersion\ conference proceedings for the German MUC-conference]
 \RequirePackage{expl3}
 \ExplSyntaxOn
 \bool_new:N \g_MUC@compatibility_mode
 \@ifpackagelater{expl3}{2015/09/07}{
 \bool_gset_false:N \g_MUC@compatibility_mode
 }{
-\msg_new:nnn {mucproc}{compatibility}{Your~ LaTeX-Distribution~ seems~ to~ be~ outdated.\\\\
+\msg_new:nnn {mucproc}{compatibility}{
+    Your~ LaTeX-Distribution~ seems~ to~ be~ outdated.\\\\
     Enabling~ compatibility~ Mode.\\\\
     Some~ features~ won't~ be~ available.
     }
@@ -63,16 +64,28 @@
 \fi
 \ifMUC@final
     \bool_if:NTF \g_MUC@compatibility_mode {
-        \msg_new:nnn {mucproc} {compatibilty-final-error} {forcefinal~ is~ not~ possible~ in~ compatibilty~ mode.\\\\
+        \msg_new:nnn {mucproc} {compatibilty-final-error} {
+        forcefinal~ is~ not~ possible~ in~ compatibilty~ mode.\\\\
         Update~ your~ TeX~ distribution~ and retry!}
         \msg_error:nn {mucproc} {compatibilty-final-error}
 
     }{
+    \sys_if_engine_luatex:F {
+        \msg_new:nnn {mucproc} {luatex-required} {
+        forcefinal~ requires~ LuaLaTeX~ for~ correct~ PDF/A~ output.\\\\
+        Remove~ forcefinal~ option~ or~ change~ the~ compiler.
+        }
+        \msg_error:nn {mucproc} {luatex-required}
+    }
     \clist_new:N \l_MUC@globalopts_clist
 
-    \msg_new:nnn {mucproc} {force-final} {forcefinal~ option~ is~ enabled.~ Ignoring~ all~ global~ complementary~ options.}
+    \msg_new:nnn {mucproc} {force-final} {
+        forcefinal~ option~ is~ enabled.\\\\
+        Ignoring~ all~ global~ complementary~ options.}
     \msg_warning:nn {mucproc} {force-final}
-    \msg_new:nnn {mucproc} {remove-draft}{forcefinal~ enabled:~ The~ global~ Option~ #1~ is~ ignored,~ because~ it~ seems~ to~ activate draft~ mode!}
+    \msg_new:nnn {mucproc} {remove-draft}{
+        forcefinal~ enabled:~ The~ global~ Option~ #1~ is~ ignored,~
+        because~ it~ seems~ to~ activate draft~ mode!}
 
     \exp_args:Nx \clist_map_inline:nn {\@classoptionslist} {
      \tl_if_in:nnTF {#1} {draft}
@@ -93,22 +106,20 @@
 \fi
 
 \newcommand*{\@fontsizefilebase}{mucfontsize}
-\PassOptionsToClass{fontsize=10pt,abstract=true,parskip=full,twoside=semi,headsepline}{scrartcl}
+\PassOptionsToClass{abstract=true,parskip=full,fontsize=10pt,
+    twoside=semi}{scrartcl}
 \LoadClass{scrartcl}
 \setparsizes{0pt}{7pt plus 7 pt}{1em plus 1 fill}
 \raggedbottom
-\RequirePackage{graphicx}% including picture material
-
-\RequirePackage{babel}% language settings
-
-\PassOptionsToPackage{babel}{csquotes}%context sensitive quotation facilities
+\RequirePackage{graphicx}
+\RequirePackage{babel}
+\PassOptionsToPackage{babel}{csquotes}
 \bbl@frenchspacing
 \RequirePackage{csquotes}
 
 \RequirePackage{geometry}% setup margins
-\geometry{paper=a4paper,top=4.8cm, bottom=5.7cm,left=3.8cm,right=4cm,headheight=12pt}
-\geometry{headsep=\dimexpr1cm-\headheight\relax}
-
+\geometry{paper=a4paper,top=4.8cm, bottom=5.7cm,left=3.8cm,right=4cm,
+    head=12.045pt,headsep=\dimexpr1cm-12.045pt\relax}
 
 \PassOptionsToPackage{backend=biber}{biblatex}
 \PassOptionsToPackage{citestyle=authoryear-comp}{biblatex}
@@ -117,12 +128,6 @@
 \DeclareLanguageMapping{american}{american-apa}
 \DeclareLanguageMapping{ngerman}{ngerman-apa}
 \renewcaptionname{ngerman}{\refname}{Literaturverzeichnis}
-
-\AtEveryBibitem{%
-  \ifboolexpr{test {\ifentrytype{article}} and not test {\iffieldundef{doi}}}
-    {\clearfield{number}}
-    {}%
-}
 
 \renewcommand*{\nameyeardelim}{\addcomma\space}
 \bool_new:N \g_MUC@fontspec_bool
@@ -156,9 +161,9 @@
 
 \if_bool:N \g_MUC@fontspec_bool
 \RequirePackage{fontspec}
-\fontspec_font_if_exist:nTF {Times~ New~ Roman}{\setmainfont{Times~ New~ Roman}}{
-\MUC@font_Fallback:
-}
+\fontspec_font_if_exist:nTF {Times~ New~ Roman}
+    {\setmainfont{Times~ New~ Roman}}
+{\MUC@font_Fallback:}
 \else:
 \MUC@font_Fallback:
 \fi:
@@ -203,33 +208,53 @@
         \endgroup
     }
 \fi:
-\ExplSyntaxOff
-\ExplSyntaxOn
-\clist_new:N \l_MUCproc@thanks_clist
-\cs_set:Nn \MUCproc@thanks:nn {\clist_gput_right:Nn \l_MUCproc@thanks_clist {{#2\def\@thefnmark{#1}\@makefnmark}}}
-\NewDocumentCommand{\MUCproc@thanks}{om}{
+\clist_new:N \l_MUC@thanks_clist
+\cs_set:Nn \MUC@thanks:nn {
+    \clist_gput_right:Nn \l_MUC@thanks_clist
+        {{#2\def\@thefnmark{#1}\@makefnmark}
+    }}
+\bool_if:NTF \g_MUC@compatibility_mode
+{\NewDocumentCommand{\MUC@thanks}{om}{
+    \footnotemark%
+    \exp_args:Nx \MUC@thanks:nn {\thefootnote}{#2}
+    }
+}{
+\NewDocumentCommand{\MUC@thanks}{om}{
     \footnotemark%
     \IfNoValueF{#1}{
-        \prop_if_exist:NF \g_MUC@InstRef_prop {\prop_new:N \g_MUC@InstRef_prop}
+        \prop_if_exist:NF \g_MUC@InstRef_prop {
+            \prop_new:N \g_MUC@InstRef_prop}
         \prop_put:Nnx \g_MUC@InstRef_prop {#1} {\thefootnote}
         }
-    \exp_args:Nx \MUCproc@thanks:nn {\thefootnote}{#2}
+    \exp_args:Nx \MUC@thanks:nn {\thefootnote}{#2}
     }
-
+}
+\bool_if:NTF \g_MUC@compatibility_mode {
+\msg_new:nnn {mucproc} {thanksref-unavailable} {
+    Compatibilty~ mode~ enabled.\\\\
+    The~ institution~ reference~ mechanism~ is~ not available.\\\\
+    Update~ Your~ TeX~ distribution~ to~ be~ able~
+        to~ use~ this~ feature.
+    }
+\msg_warning:nn {mucproc} {thanksref-unavailable}
+    \newcommand\MUC@thanksref[1]{$\dagger$}
+}{
 \msg_new:nnn {mucproc} {thanks-label-missing} {
     No~ institute~ labeled~ '#1'.\\\\
-    Add~ a~ label~ using~ the~ optional~ argument~ of~ the~ \thanks~ command.
+    Add~ a~ label~ using~ the~ optional~ argument~
+        of~ the~ \thanks~ command.
     }
 
-\NewDocumentCommand\MUCproc@thanksref{m}{
+\NewDocumentCommand\MUC@thanksref{m}{
     \prop_if_in:NnTF \g_MUC@InstRef_prop {#1} {
-    \def\@thefnmark{\prop_item:Nn \g_MUC@InstRef_prop {#1}}\@makefnmark
+    \def\@thefnmark{\prop_item:Nn \g_MUC@InstRef_prop {#1}}%
+    \@makefnmark
     }
     {\msg_error:nn {mucproc} {thanks-label-missing}}
 }
-
-\newcommand*\typeset@MUCproc@thanks {\clist_use:Nn \l_MUCproc@thanks_clist {\rule{0pt}{0pt}\\}}
-
+}
+\newcommand*\typeset@MUC@thanks {
+    \clist_use:Nn \l_MUC@thanks_clist {\rule{0pt}{0pt}\\}}
 \renewcommand*{\maketitle}{
 \begingroup
 \DeclareExpandableDocumentCommand{\thanks}{om}{}
@@ -238,14 +263,15 @@
 \MUC@passTitleData
 \let\titlepage@restore\relax
 \renewcommand*\thefootnote{\@arabic\c@footnote}
-\let\thanks\MUCproc@thanks
-\let\thanksref\MUCproc@thanksref
+\let\thanks\MUC@thanks
+\let\thanksref\MUC@thanksref
 \global\@topnum=\z@
 \setparsizes{\z@}{\z@}{\z@\@plus 1fil}\par@updaterelative
 \null
 \vskip 41pt
 {\usekomafont{title}{\Huge \@title \par}}%
-    {\ifx\@subtitle\@empty\else\vskip .5em\usekomafont{subtitle}\Large\@subtitle\par\fi}%
+    {\ifx\@subtitle\@empty\else\vskip .5em\usekomafont{subtitle}%
+    \Large\@subtitle\par\fi}%
     \vskip 7pt
 {%
 \usekomafont{author}{%
@@ -259,38 +285,11 @@
 \bool_if:NTF \g_MUC@compatibility_mode
     {\thispagestyle{empty}}
     {\thispagestyle{MUC@titlepagestyle}}
-\typeset@MUCproc@thanks
+\typeset@MUC@thanks
 \par
 \vspace{8pt}
 \endgroup
 \setcounter{footnote}{0}%
-\bool_if:NT \g_MUC@compatibility_mode {
-\let\thanks\relax
-\let\maketitle\relax
-\let\@maketitle\relax
-\global\let\@thanks\@empty
-\global\let\@author\@empty
-\global\let\@date\@empty
-\global\let\@title\@empty
-\global\let\@subtitle\@empty
-\global\let\@extratitle\@empty
-\global\let\@titlehead\@empty
-\global\let\@subject\@empty
-\global\let\@publishers\@empty
-\global\let\@uppertitleback\@empty
-\global\let\@lowertitleback\@empty
-\global\let\@dedication\@empty
-\global\let\author\relax
-\global\let\title\relax
-\global\let\extratitle\relax
-\global\let\titlehead\relax
-\global\let\subject\relax
-\global\let\publishers\relax
-\global\let\uppertitleback\relax
-\global\let\lowertitleback\relax
-\global\let\dedication\relax
-\global\let\date\relax
-}
 \global\let\and\relax
 \global\let\thanksref\relax
 }
@@ -328,15 +327,25 @@
 \fi
 
 \reverse_if:N  \if_bool:N \g_MUC@compatibility_mode
-\newcommand*{\MUC@sectionnumberbox}[1]{\makebox[19pt][l]{#1\autodot}}
-\renewcommand*{\sectionformat}{\MUC@sectionnumberbox{\thesection}}
-\renewcommand*{\subsectionformat}{\MUC@sectionnumberbox{\thesubsection}}
-\renewcommand*{\subsubsectionformat}{\MUC@sectionnumberbox{\thesubsubsection}}
-\RedeclareSectionCommand[afterskip=1.5ex plus .2ex, beforeskip=-3.6ex plus -1ex minus -.2ex]{section}
-\RedeclareSectionCommand[afterskip=.5ex plus .2ex, beforeskip=-1ex plus -1ex minus -.2ex]{subsection}
-\RedeclareSectionCommand[afterskip=.5ex plus .2ex, beforeskip=-1ex plus -1ex minus -.2ex]{subsubsection}
-\RedeclareSectionCommand[afterskip=1em, beforeskip=1ex plus 1ex minus .2ex]{paragraph}
-\RedeclareSectionCommand[afterskip=1em, beforeskip=1ex plus 1ex minus .2ex]{subparagraph}
+\newcommand*{\MUC@sectionnumberbox}[1]{\makebox[28bp][l]{#1\autodot}}
+\renewcommand*{\sectionformat}{
+    \MUC@sectionnumberbox{\thesection}}
+\renewcommand*{\subsectionformat}{
+    \MUC@sectionnumberbox{\thesubsection}}
+\renewcommand*{\subsubsectionformat}{
+    \MUC@sectionnumberbox{\thesubsubsection}}
+\RedeclareSectionCommand[afterskip=1.5ex plus .2ex,%
+    beforeskip=-3.6ex plus -1ex minus -.2ex]{section}
+\RedeclareSectionCommand[afterskip=.5ex plus .2ex,%
+    beforeskip=-1ex plus -1ex minus -.2ex]{subsection}
+\RedeclareSectionCommand[afterskip=.5ex plus .2ex,%
+    beforeskip=-1ex plus -1ex minus -.2ex]{subsubsection}
+\RedeclareSectionCommand[afterskip=1em,%
+    beforeskip=1ex plus 1ex minus .2ex]{paragraph}
+\RedeclareSectionCommand[afterskip=1em,%
+    beforeskip=1ex plus 1ex minus .2ex]{subparagraph}
+\fi:
+\ExplSyntaxOff
 \setkomafont{disposition}{}
 \setkomafont{title}{}
 \setkomafont{author}{\large}
@@ -347,25 +356,40 @@
 \newkomafont{abstractcontent}{\small}
 \newkomafont{abstract}{\normalsize\bfseries}
 \newkomafont{authoraddendum}{\small}
-\renewenvironment{abstract}{\setparsizes{0pt}{4pt}{0pt plus 1 fill}{\usekomafont{abstract}%
-    \abstractname}\par
+\renewenvironment{abstract}{%
+    \setparsizes{0pt}{4pt}{0pt plus 1 fill}{%
+    \usekomafont{abstract}%
+    \abstractname}\par%
     \usekomafont{abstractcontent}}{}
 
 \ifMUC@pagestyle
-    \ExplSyntaxOff
-    \usepackage{scrlayer-scrpage}
+\PassOptionsToPackage{headsepline}{scrlayer-scrpage}
+    \RequirePackage{scrlayer-scrpage}
     \ifMUC@copyrightinfo
-        \DeclareNewLayer[align=tl,area={\dimexpr 1in + \hoffset + \oddsidemargin\relax}{\dimexpr\paperheight-3.9cm\relax}{\textwidth}{2cm},contents={
-         \setlength{\fboxrule}{.7bp}%
-         \setlength{\fboxsep}{6.5pt}%
-         \fbox{\hspace*{.8pt}\parbox[t][\dimexpr2cm-2\fboxsep-2\fboxrule\relax][t]{\dimexpr\textwidth-2\fboxsep-2\fboxrule-1.6pt\relax}{%
-         Platzhalter für DOI und ggf. Copyright Text. (Bitte nicht entfernen).\par
-         \vspace{7pt}
-         Name, Vorname (2017): Titel. Tagungsband Mensch und Computer 2017. Gesellschaft für Informatik. DOI: xxxxxx}%
-        }}]{copyright}
-        \DeclareNewPageStyleByLayers{MUC@titlepagestyle}{copyright}
+        \newsavebox\MUC@copyrightbox
+     \begin{lrbox}{\MUC@copyrightbox}
+     \setlength{\fboxrule}{.7bp}%
+     \setlength{\fboxsep}{6.5pt}%
+     \fbox{\hspace*{.8pt}\parbox[t][\dimexpr2cm-2\fboxsep
+            -2\fboxrule\relax][t]{%
+                \dimexpr\textwidth-2\fboxsep-2\fboxrule%
+                -1.6pt\relax}{%
+     Platzhalter für DOI und ggf. Copyright Text.
+        (Bitte nicht entfernen).\par
+     \vspace{7pt}
+     Name, Vorname (2017): Titel.%
+     Tagungsband Mensch und Computer 2017.
+        Gesellschaft für Informatik.%
+     DOI: xxxxxx}%
+     }
+     \end{lrbox}
+    \DeclareNewLayer[align=tl,area={\dimexpr 1in
+         + \hoffset + \oddsidemargin\relax}{%
+        \dimexpr\paperheight-3.9cm\relax}{\textwidth}{2cm},
+        contents={\usebox\MUC@copyrightbox}]{copyright}
+    \DeclareNewPageStyleByLayers{MUC@titlepagestyle}{copyright}
     \else
-        \DeclareNewPageStyleAlias{MUC@titlepagestyle}{empty}
+    \DeclareNewPageStyleAlias{MUC@titlepagestyle}{empty}
     \fi
     \clearpairofpagestyles
     \ifMUC@headline
@@ -374,11 +398,7 @@
     \fi
     \setkomafont{pagehead}{\normalfont}
     \setkomafont{pagefoot}{}
-    \ExplSyntaxOn
-%%%%}
 \fi
-\fi:
-\ExplSyntaxOff
 \endinput
 %%
 %% End of file `mucproc.cls'.

@@ -172,5 +172,13 @@ TSWLatexianTemp*
 # KBibTeX
 *~*
 
+# pdfx
+*.xmpdata
+*.xmpi
+
 #special files
 X.tex
+compatibilty_tests
+LoremIpsum.pdf
+overlay.tex
+mucproc_demo_*.pdf

@@ -1,11 +1,34 @@
-% !TeX program=lualatex
+%%
+%% This is file `mucproc_demo.tex', it is a demonstration file for the mucproc.cls class.
+%% 
+%% Copyright (C) 2017 by Marei Peischl <TeX@mareipeischl.de>
+%% 
+%% This file may be distributed and/or modified under the conditions of
+%% the LaTeX Project Public License, either version 1.3 of this license
+%% or (at your option) any later version.  The latest version of this
+%% license is in:
+%% 
+%%    http://www.latex-project.org/lppl.txt
+%% 
+%% and version 1.3 or later is part of all distributions of LaTeX version
+%% 2005/12/01 or later.
+%% 
+% !TeX program=lualatex 
+% !TeX spellcheck = de_DE
+% !TeX encoding = utf8
+% !TeX TXS-program:bibliography = txs:///biber
+%%magic comment: einige Editoren verstehen diese Kommentare und starten lualatex anstatt der Standardeinstellung als Compiler
+
+
 \documentclass[ngerman]{mucproc}
 
 \bibliography{muc_demo}
 
-\title{Formatierungsvorgaben für Beiträge\\ zur Mensch und Computer 2017}%Tragen Sie hier den Titel Ihrer Einreichung ein.
+\title{Formatierungsvorgaben für Beiträge\\
+	zur Mensch und Computer 2017}%Tragen Sie hier den Titel Ihrer Einreichung ein.
 \subtitle{\LaTeX-Version}%Bitte für die Einreichungen keinen Untertitel benutzen
 \author{Marei Peischl\thanks[inst1]{Abteilung, Institution}\and Vorname Name\thanks{Abteilung, Institution}\and Vorname Name\thanksref{inst1}}
+%Sofern zwei Autoren der gleichen Instituation angehören, können Sie das optionale Argument von \thanks nutzen um ein Label auf eine Institution zu setzen. Diese kann anschließend mit \thanksref referenziert werden.
 
 
 %Für Tabellenbeispiel
@@ -14,23 +37,23 @@
 
 
 %%%%%%%%%%%%%%%%%
-%Syntaxhighlighting und Tests
+%Nur wegen der Codebeispiele notwendig
 
 %%%SyntaxHighlighting: Needs pygmentize installed and -shell-escape set. See minted-documentation for for information.
-\usepackage{minted}
-\setminted{bgcolor=black!10}
-\NewDocumentCommand{\inlinemint}{O{}mv}{\mintinline[#1]{#2}{#3}}
-\usemintedstyle{friendly}
+%\usepackage{minted}
+%\setminted{bgcolor=black!10}
+%\NewDocumentCommand{\inlinemint}{O{}mv}{\mintinline[#1]{#2}{#3}}
+%\usemintedstyle{friendly}
 
 %%Fallback wenn minted nicht konfiguriert ist
-%\usepackage{verbatim}% http://ctan.org/pkg/verbatim
-%\newenvironment{minted}[2][]{\endgraf\verbatim}{\endverbatim}
-%\NewDocumentCommand{\inlinemint}{omv}{\texttt{#3}}
-
+\usepackage{verbatim}% http://ctan.org/pkg/verbatim
+\newenvironment{minted}[2][]{\endgraf\verbatim}{\endverbatim}
+\NewDocumentCommand{\inlinemint}{omv}{\texttt{#3}}
+%%%%%%%%%%%%%%%%
 \begin{document}
-
 	
 \maketitle
+
 	
 \begin{abstract}
 Dieser Text dient dazu die Verwendung der Dokumentenklasse \textsf{mucproc} als Template für Beiträge zur Konferenz \enquote{Mensch und Computer 2017} zu veranschaulichen. Für dieses Dokument wurde die eben genannte Dokumentenklasse verwendet. Es entspricht somit den Formatvorgaben für Einreichungen.
@@ -71,7 +94,7 @@ Bitte benutzen Sie für die Formatierung Ihres Dokuments die Dokumentenklasse \t
 \begin{minted}{latex}
 \documentclass[Optionen]{mucproc}
 \end{minted}
-einbinden  und ersetzen diesen Text durch Ihren eigenen.
+einbinden und ersetzen diesen Text durch Ihren eigenen.
 
 Die Dokumentenklasse übernimmt die Formatierung Ihres Textes nach den Vorgaben. Ändern Sie keinesfalls das vorgegebene Layout ab.
 
@@ -80,7 +103,6 @@ Die Dokumentenklasse übernimmt die Formatierung Ihres Textes nach den Vorgaben.
 Als Schriftart wird Times New Roman verwendet. Die Dokumentenklasse prüft, ob das verwendete System über diese Möglichkeit verfügt und weicht notfalls auf die Standard T1-Schriftart der verwendeten Distribution aus. Somit können Sie dieses Template mit Ihren gewohnten Einstellungen bearbeiten, ohne sich Gedanken um spezielle Anpassungen machen zu müssen.
 
 \subsection{Satzspiegel}
-%Der voreingestellte Satzspiegel beträgt 13,2 * 21,1 cm, mit folgenden Seitenrändern: 
 Die Seitenränder sind in der Dokumentenklasse festgelegt. Bitte nehmen Sie keine Änderungen am Satzspiegelformat vor.
 
 Die Ränder entsprechen denen der Word-Vorlage:
@@ -108,6 +130,12 @@ Bitte verwenden Sie einen kurzen, maximal zweizeiligen Titel und keinen Untertit
 Die einzelnen Autoren innerhalb des \inlinemint{latex}|\author|-Makros werden durch \inlinemint{latex}|\and| getrennt.
 Eine Institution kann über das \texttt{\textbackslash{}thanks}-Makro wie eine Fußnote gesetzt werden, vgl. Beispieldatei. Bitte machen Sie an dieser Stelle nur Angaben zur Institution und schreiben Sie Ihre Kontaktinformationen an das Ende Ihres Beitrags, vor das Literaturverzeichnis.
 
+Falls Sie bei mehreren Autoren die selbe Institution angeben möchten, ist es möglich eine Institution zu refenzieren:
+\begin{minted}{latex}
+\author{Vorname1 Nachname1\thanks[inst:1]{Abteilung, Institution}\and
+	Vorname2 Nachname2\thanksref{inst:1}}
+\end{minted}
+Das optionale Argument von \inlinemint{latex}|thanks| entspricht in etwa einem Label. Es kann eine beliebige Zeichenkette ohne \LaTeX spezifische Sonderzeichen enthalten.
 
 \subsection{Anonymisierung für die Einreichung}
 Die Autoreninformationen werden für die Begutachtung gesondert im Konferenzmanagementsystem erfasst, um eine anonymisierte Begutachtung der Beiträge zu ermöglichen.
@@ -290,10 +318,10 @@ Sofern Sie eine deutlich größere Datenbank als die notwendigen Einträge benut
 \begin{minted}{bash}
 biber --output_format=bibtex --output_resolve <filename>.bcf
 \end{minted}
-Die dadurch erzeugte verkleinerte Datenbank heißt \texttt{<filename>\_biber.bib}
+Die dadurch erzeugte verkleinerte Datenbank heißt \texttt{<filename>\_biber.bib} und kann dann für die Verwendung beliebig umbenannt werden.
 
 \section{Schlussteil}
-Der Schlussteil Ihres Beitrags umfasst das Literaturverzeichnis und (nur in der endgültigen Fassung!) eventuelle Danksagungen und die Kontaktinformationen der Autoren. Für die Überschriften im Schlussteil sollen nicht-nummerierte Unterüberschriften (\inlinemint{latex}|subsection*{}|) verwendet werden.
+Der Schlussteil Ihres Beitrags umfasst das Literaturverzeichnis und (nur in der endgültigen Fassung!) eventuelle Danksagungen und die Kontaktinformationen der Autoren. Für die Überschriften im Schlussteil sollen nicht-nummerierte Unterüberschriften (\inlinemint{latex}|\subsection*{}|) verwendet werden.
 
 
 \subsection*{Danksagung}
@@ -333,7 +361,5 @@ Die \textsf{mucproc}-Klasse stellt für diesen Mechanismus die \texttt{authoradd
 \begin{authoraddendum}[foto]{Nachname, Vorname}
 Kurze Vita. Die Beschreibung der Person sollte sich auf max. 10 Zeilen beschränken
 \end{authoraddendum}
-
-
 
 \end{document}

@@ -15,28 +15,32 @@
 % The Current Maintainer of this work is Marei Peischl.
 %
 % This work consists of the files mucproc.dtx and mucproc.ins
-% and the derived files mucproc.cls
+% and the derived files mucproc.cls, mucfontsize10pt.clo
+% and the demonstration file mucproc_demo.tex.
 %
 % \fi
 %
 % \iffalse
 %
 %<*!font-clo>
-\def\mucprocVersion{0.9}
+\def\mucprocVersion{0.10}
 %<*driver>
 \ProvidesFile{mucproc.dtx}
 %</driver>
 
-%<class>\NeedsTeXFormat{LaTeX2e}
+%<class>\NeedsTeXFormat{LaTeX2e}[2014/05/01]
 %<class>\ProvidesClass{mucproc}
 %<*class>
-    [2017/02/19 v\mucprocVersion conference proceedings for the German MUC-conference]
+    [2017/02/20 v\mucprocVersion\ conference proceedings for the German MUC-conference]
 %</class>
 %
 %<*driver>
 \RequirePackage{scrlfile}
 \ReplaceClass{article}{scrartcl}
-\documentclass{ltxdoc}%scrartcl}%TODO:mucproc}
+\documentclass[english]{ltxdoc}
+\usepackage{selinput}\SelectInputMappings{adieresis={ä},germandbls={ß}}
+\usepackage[T1]{fontenc}
+\usepackage{babel}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -116,17 +120,26 @@
 %
 % \DescribeMacro{\author}
 % \DescribeMacro{\and}
-% \DescribeMacro{\thanks}
 % The |author| macro can also be used similar to standard \LaTeX{} documents.
 % If the document has more than one author, the names shall be separated with |\and|.
+% \DescribeMacro{\thanks}
 % The |\thanks| command shall be used to add the corresponding institution.
+% It can be used similar to the standard \LaTeX{} definition, though it also can process an optional argument.
+% The optional argument takes a label to reference an institution of annother author.
+% This prevents multiple mention of institions.
+% \DescribeMacro{\thanksref}
+% This macro is used to reference the labels set with the |\thanks| command.
+% The implementation of the institution reference is very different from the usual label/ref mechanism.
+% That's why the reference is only defined after the label was set. If the argument of |\thanksref| isn't a known Label an error will occur.
+%
 % \begin{verbatim}
-% \author{John Doe\thanks{Institution 1}\and
-%    Jane Doe\thanks{Institution 2}}
+% \author{John Doe\thanks[inst:1]{Institution 1}\and
+%    Jane Doe\thanks{Institution 2}\and
+%    John Doe II\thanksref{inst:1}
 % \end{verbatim}
 % In contrast to the standard classes, \textsf{mucproc} doesn't place the footnotes created by |\thanks| on the bottom of the page, they are positioned directly below the author field of the title.
 %
-% Other possible entries for the title get ignored.
+% Other possible entries for the title (e.\,g. |\date|)are ignored.
 %
 % \DescribeMacro{\maketitle} The title has to be created by calling the |\maketitle| command as usual.
 %
@@ -147,8 +160,9 @@
 % \section{Implementation}
 % This section contains the source code to the \textsf{mucproc.cls}. It will be tried to explain how the class breaks the tasks.
 % \subsubsection{Compatibility mode}
-% This document class intends to be compiled on as many different distributions as possible.
-% Because some of the fallback tests require a the \textsf{expl3} package version of 2015-09-07 or newer, a compatibility mode test is implemented first.
+% This document class intends to be compiled on as many different distributions as possible. Basically this class compiles on releases newer than 2014/05/01 without errors.
+% Nevertheless some specific fallback tests require a the \textsf{expl3} package version of 2015/09/07 or newer.
+% A compatibility mode test is implemented first and deactivates all problematic features of the class.
 %    \begin{macrocode}
 \RequirePackage{expl3}
 \ExplSyntaxOn
@@ -212,6 +226,13 @@
         \msg_error:nn {mucproc} {compatibilty-final-error}
 
     }{
+    \sys_if_engine_luatex:F {
+        \msg_new:nnn {mucproc} {luatex-required} {
+        forcefinal~ requires~ LuaLaTeX~ for~ correct~ PDF/A~ output.\\\\
+        Remove~ forcefinal~ option~ or~ change~ the~ compiler.
+        }
+        \msg_error:nn {mucproc} {luatex-required}
+    }
     \clist_new:N \l_MUC@globalopts_clist
 
     \msg_new:nnn {mucproc} {force-final} {
@@ -252,8 +273,8 @@
 % The next step is loading \textsf{scrartcl} as base class. According to the formatting rules we pass some options and use the \texttt{mucfontsize10pt.clo} file for setting up the font sizes.
 %    \begin{macrocode}
 \newcommand*{\@fontsizefilebase}{mucfontsize}
-\PassOptionsToClass{fontsize=10pt,abstract=true,parskip=full,
-    twoside=semi,headsepline}{scrartcl}
+\PassOptionsToClass{abstract=true,parskip=full,fontsize=10pt,
+    twoside=semi}{scrartcl}
 \LoadClass{scrartcl}
 \setparsizes{0pt}{7pt plus 7 pt}{1em plus 1 fill}
 \raggedbottom
@@ -269,9 +290,7 @@
 
 \RequirePackage{geometry}% setup margins
 \geometry{paper=a4paper,top=4.8cm, bottom=5.7cm,left=3.8cm,right=4cm,
-    headheight=12pt}
-\geometry{headsep=\dimexpr1cm-\headheight\relax}
-
+    head=12.045pt,headsep=\dimexpr1cm-12.045pt\relax}
 %    \end{macrocode}
 
 % \subsection{Bibliography setup}
@@ -396,52 +415,105 @@
         \endgroup
     }
 \fi:
-\ExplSyntaxOff
 %    \end{macrocode}
 %
-% \subsection{Title settings}
-%   \begin{macrocode}
-\ExplSyntaxOn
-\clist_new:N \l_MUCproc@thanks_clist
-\cs_set:Nn \MUCproc@thanks:nn {
-    \clist_gput_right:Nn \l_MUCproc@thanks_clist
+% \section{Title creation}
+% The title creation process also invokes the mechanism to pass the title data to headline and metadata.
+% It can be initialized calling |\maketitle|.
+% \subsection{Institution footnotes}
+% The MUC formatting guidelines request the institutions typeset similar to footnotes, though they shouldn't be placed at the bottom of the page.
+% The standard footnote mechanism is quite complicated, though we use the \LaTeX3 clist datatype to create a special mechanism implementing these ``footnotes''.
+% The mechanism is called inside |\maketitle| but created outside of that macro definition to leave the code more readable.
+%
+% All Arguments of the |\thanks| command will be saved in the comma list called |\l_MUC@thanks_clist|.
+%    \begin{macrocode}
+\clist_new:N \l_MUC@thanks_clist
+%    \end{macrocode}
+% The value of the footnote counter has to be expanded when the |\thanks| macro is called. Otherwise the footnotemarks might not match.
+% To achieve this expansion order the |\MUC@thanks:nn| command takes the counter value as first argument and the institution name as second.
+%    \begin{macrocode}
+\cs_set:Nn \MUC@thanks:nn {
+    \clist_gput_right:Nn \l_MUC@thanks_clist
         {{#2\def\@thefnmark{#1}\@makefnmark}
     }}
-\NewDocumentCommand{\MUCproc@thanks}{om}{
+%    \end{macrocode}
+% Inside the real |\thanks| macro the first argument will be expanded directly.
+% Additionally |\MUC@thanks| sets its own first (optional) argument as a label for the property list |\g_MUC@InstRef_prof|.
+% This allows the footnote counter value to be accessed through the label.
+%    \begin{macrocode}
+\bool_if:NTF \g_MUC@compatibility_mode
+{\NewDocumentCommand{\MUC@thanks}{om}{
+    \footnotemark%
+    \exp_args:Nx \MUC@thanks:nn {\thefootnote}{#2}
+    }
+}{
+\NewDocumentCommand{\MUC@thanks}{om}{
     \footnotemark%
     \IfNoValueF{#1}{
-        \prop_if_exist:NF \g_MUC@InstRef_prop {\prop_new:N \g_MUC@InstRef_prop}
+        \prop_if_exist:NF \g_MUC@InstRef_prop {
+            \prop_new:N \g_MUC@InstRef_prop}
         \prop_put:Nnx \g_MUC@InstRef_prop {#1} {\thefootnote}
         }
-    \exp_args:Nx \MUCproc@thanks:nn {\thefootnote}{#2}
+    \exp_args:Nx \MUC@thanks:nn {\thefootnote}{#2}
     }
-
+}
+%    \end{macrocode}
+% The mechanism seems to work like the typical \LaTeX{} label/ref though no backref is supported.
+% To inform the user about this an error will be thrown when a label is accessed which does not exist.
+%    \begin{macrocode}
+\bool_if:NTF \g_MUC@compatibility_mode {
+\msg_new:nnn {mucproc} {thanksref-unavailable} {
+    Compatibilty~ mode~ enabled.\\\\
+    The~ institution~ reference~ mechanism~ is~ not available.\\\\
+    Update~ Your~ TeX~ distribution~ to~ be~ able~
+        to~ use~ this~ feature.
+    }
+\msg_warning:nn {mucproc} {thanksref-unavailable}
+    \newcommand\MUC@thanksref[1]{$\dagger$}
+}{
 \msg_new:nnn {mucproc} {thanks-label-missing} {
     No~ institute~ labeled~ '#1'.\\\\
-    Add~ a~ label~ using~ the~ optional~ argument~ of~ the~ \thanks~ command.
+    Add~ a~ label~ using~ the~ optional~ argument~
+        of~ the~ \thanks~ command.
     }
 
-\NewDocumentCommand\MUCproc@thanksref{m}{
+\NewDocumentCommand\MUC@thanksref{m}{
     \prop_if_in:NnTF \g_MUC@InstRef_prop {#1} {
-    \def\@thefnmark{\prop_item:Nn \g_MUC@InstRef_prop {#1}}\@makefnmark
+    \def\@thefnmark{\prop_item:Nn \g_MUC@InstRef_prop {#1}}%
+    \@makefnmark
     }
     {\msg_error:nn {mucproc} {thanks-label-missing}}
 }
-
-\newcommand*\typeset@MUCproc@thanks {
-    \clist_use:Nn \l_MUCproc@thanks_clist {\rule{0pt}{0pt}\\}}
-
+}
+%    \end{macrocode}
+% After the title has been set, the institutional notes shall be typeset.
+%    \begin{macrocode}
+\newcommand*\typeset@MUC@thanks {
+    \clist_use:Nn \l_MUC@thanks_clist {\rule{0pt}{0pt}\\}}
+%    \end{macrocode}
+% \subsection{Typesetting the title}
+% As written before, |\maketitle| has to execute additional jobs.
+% Since the title fields also can contain other macros or even linebreaks, the expansion process has to be controlled carefully.
+%    \begin{macrocode}
 \renewcommand*{\maketitle}{
 \begingroup
+%    \end{macrocode}
+% Before passing the data to the headlines or metadata using the earlier defined |\MUC@passTitleData| we need some redefinitions for the commands, which can be used inside the title fields.
+%    \begin{macrocode}
 \DeclareExpandableDocumentCommand{\thanks}{om}{}
 \def\thanksref##1{}
 \def\and{\unskip,~\ignorespaces}
 \MUC@passTitleData
+%    \end{macrocode}
+% Not the actual title creation begins redefining the user macros to those prepared for that purpose.
+%    \begin{macrocode}
 \let\titlepage@restore\relax
 \renewcommand*\thefootnote{\@arabic\c@footnote}
-\let\thanks\MUCproc@thanks
-\let\thanksref\MUCproc@thanksref
-%\next@tdpage
+\let\thanks\MUC@thanks
+\let\thanksref\MUC@thanksref
+%    \end{macrocode}
+% Now only the title fields have to be typeset.
+%    \begin{macrocode}
 \global\@topnum=\z@
 \setparsizes{\z@}{\z@}{\z@\@plus 1fil}\par@updaterelative
 \null
@@ -462,39 +534,11 @@
 \bool_if:NTF \g_MUC@compatibility_mode
     {\thispagestyle{empty}}
     {\thispagestyle{MUC@titlepagestyle}}
-\typeset@MUCproc@thanks
+\typeset@MUC@thanks
 \par
 \vspace{8pt}
 \endgroup
-%\fi
 \setcounter{footnote}{0}%
-\bool_if:NT \g_MUC@compatibility_mode {
-\let\thanks\relax
-\let\maketitle\relax
-\let\@maketitle\relax
-\global\let\@thanks\@empty
-\global\let\@author\@empty
-\global\let\@date\@empty
-\global\let\@title\@empty
-\global\let\@subtitle\@empty
-\global\let\@extratitle\@empty
-\global\let\@titlehead\@empty
-\global\let\@subject\@empty
-\global\let\@publishers\@empty
-\global\let\@uppertitleback\@empty
-\global\let\@lowertitleback\@empty
-\global\let\@dedication\@empty
-\global\let\author\relax
-\global\let\title\relax
-\global\let\extratitle\relax
-\global\let\titlehead\relax
-\global\let\subject\relax
-\global\let\publishers\relax
-\global\let\uppertitleback\relax
-\global\let\lowertitleback\relax
-\global\let\dedication\relax
-\global\let\date\relax
-}
 \global\let\and\relax
 \global\let\thanksref\relax
 }
@@ -548,18 +592,19 @@
 %
 
 % \subsection{Visible adjustment of sizes and spacing}
-% To match the Word template we have to adjust a bunch of spacing settings as well as font sizes. The easiest way to archieve this is using the KOMA-Script mechanisms.
+% To match the Word template we have to adjust a bunch of spacing settings as well as font sizes. The easiest way to achieve this is using the KOMA-Script mechanisms.
+% \subsection{Structure Settings}
+% Word indents the section headings independent from the width of the section number. To achieve this a macro called |\MUC@sectionnumberbox| is created and all section formats are redefined.
 % In compatibility mode these settings will be ignored.
 %    \begin{macrocode}
 \reverse_if:N  \if_bool:N \g_MUC@compatibility_mode
-%    \end{macrocode}
-% \subsection{Structure Settings}
-% Word indents the section headings independent from the width of the section number. To archieve this a macro called |\MUC@sectionnumberbox| is created and all section formats are redefined.
-%    \begin{macrocode}
-\newcommand*{\MUC@sectionnumberbox}[1]{\makebox[19pt][l]{#1\autodot}}
-\renewcommand*{\sectionformat}{\MUC@sectionnumberbox{\thesection}}
-\renewcommand*{\subsectionformat}{\MUC@sectionnumberbox{\thesubsection}}
-\renewcommand*{\subsubsectionformat}{\MUC@sectionnumberbox{\thesubsubsection}}
+\newcommand*{\MUC@sectionnumberbox}[1]{\makebox[28bp][l]{#1\autodot}}
+\renewcommand*{\sectionformat}{
+    \MUC@sectionnumberbox{\thesection}}
+\renewcommand*{\subsectionformat}{
+    \MUC@sectionnumberbox{\thesubsection}}
+\renewcommand*{\subsubsectionformat}{
+    \MUC@sectionnumberbox{\thesubsubsection}}
 %    \end{macrocode}
 % The spacing around the headings also has to be adjusted:
 %    \begin{macrocode}
@@ -573,6 +618,8 @@
     beforeskip=1ex plus 1ex minus .2ex]{paragraph}
 \RedeclareSectionCommand[afterskip=1em,%
     beforeskip=1ex plus 1ex minus .2ex]{subparagraph}
+\fi:
+\ExplSyntaxOff
 %    \end{macrocode}
 % The font settings will be done together with all other font settings in the next subsection.
 %
@@ -602,28 +649,42 @@
 %    \end{macrocode}
 
 % \subsection{Pagestyle}
-% The demo document shows a headline containing author and document title. To archieve this that infomation was passed inside the |\maketitle| macro and saved in the |\MUC@author| and |\MUC@title| macros.
-% There is also a possibility to set a copyright-information box similar to the Word template. Both actions will only be used, when no compatibility-mode is active.
+% The demo document shows a headline containing author and document title. To achieve this that information was passed inside the |\maketitle| macro and saved in the |\MUC@author| and |\MUC@title| macros.
+% There is also a possibility to set a copyright-information box similar to the Word template.
 %    \begin{macrocode}
 \ifMUC@pagestyle
-    \ExplSyntaxOff
-    \usepackage{scrlayer-scrpage}
+	\PassOptionsToPackage{headsepline}{scrlayer-scrpage}
+    \RequirePackage{scrlayer-scrpage}
     \ifMUC@copyrightinfo
-        \DeclareNewLayer[align=tl,area={\dimexpr 1in + \hoffset +
-            \oddsidemargin\relax}{\dimexpr\paperheight-3.9cm\relax}{\textwidth}{2cm},contents={
-        	\setlength{\fboxrule}{.7bp}%
-        	\setlength{\fboxsep}{6.5pt}%
-        	\fbox{\hspace*{.8pt}\parbox[t][\dimexpr2cm-2\fboxsep-2\fboxrule\relax][t]{%
-            \dimexpr\textwidth-2\fboxsep-2\fboxrule-1.6pt\relax}{%
-        	Platzhalter für DOI und ggf. Copyright Text. (Bitte nicht entfernen).\par
-    		\vspace{7pt}
-            Name, Vorname (2017): Titel.%
-            Tagungsband Mensch und Computer 2017. Gesellschaft für Informatik.%
-            DOI: xxxxxx}%
-        }}]{copyright}
-        \DeclareNewPageStyleByLayers{MUC@titlepagestyle}{copyright}
+%    \end{macrocode}
+% Nowadays it is possible to write the complete content for the scrlayers directly inside the definition.
+% To support older distributions as well the content is wrapped into a box.
+% The most absolute length values have been extracted from different measurements to match the Word version.
+%    \begin{macrocode}
+        \newsavebox\MUC@copyrightbox
+    	\begin{lrbox}{\MUC@copyrightbox}
+    	\setlength{\fboxrule}{.7bp}%
+    	\setlength{\fboxsep}{6.5pt}%
+    	\fbox{\hspace*{.8pt}\parbox[t][\dimexpr2cm-2\fboxsep
+            -2\fboxrule\relax][t]{%
+                \dimexpr\textwidth-2\fboxsep-2\fboxrule%
+                -1.6pt\relax}{%
+    	Platzhalter für DOI und ggf. Copyright Text.
+        (Bitte nicht entfernen).\par
+    	\vspace{7pt}
+    	Name, Vorname (2017): Titel.%
+    	Tagungsband Mensch und Computer 2017.
+        Gesellschaft für Informatik.%
+    	DOI: xxxxxx}%
+    	}
+    	\end{lrbox}
+    \DeclareNewLayer[align=tl,area={\dimexpr 1in
+         + \hoffset + \oddsidemargin\relax}{%
+        \dimexpr\paperheight-3.9cm\relax}{\textwidth}{2cm},
+        contents={\usebox\MUC@copyrightbox}]{copyright}
+    \DeclareNewPageStyleByLayers{MUC@titlepagestyle}{copyright}
     \else
-        \DeclareNewPageStyleAlias{MUC@titlepagestyle}{empty}
+    \DeclareNewPageStyleAlias{MUC@titlepagestyle}{empty}
     \fi
     \clearpairofpagestyles
     \ifMUC@headline
@@ -632,14 +693,10 @@
     \fi
     \setkomafont{pagehead}{\normalfont}
     \setkomafont{pagefoot}{}
-    \ExplSyntaxOn
-%%%%}
 \fi
-\fi:
-\ExplSyntaxOff
 %    \end{macrocode}
-%</!font-clo>
 %\iffalse
+%</!font-clo>
 %<*font-clo>
 \ProvidesFile{mucfontsize10pt.clo}[2017/01/30 font size class option (10pt)]
 
