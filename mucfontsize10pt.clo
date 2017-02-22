@@ -24,7 +24,7 @@
 %% and version 1.3 or later is part of all distributions of LaTeX version
 %% 2005/12/01 or later.
 %% 
-\ProvidesFile{mucfontsize10pt.clo}[2017/01/30 font size class option (10pt)]
+\ProvidesFile{mucfontsize10pt.clo}[2017/01/30 v1.0 mucproc font size class option (10pt)]
 
 \def\normalsize{%
   \@setfontsize\normalsize{10}{12bp}

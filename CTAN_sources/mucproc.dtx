@@ -23,14 +23,14 @@
 % \iffalse
 %
 %<*!font-clo>
-\def\mucprocVersion{0.10}
+\def\mucprocVersion{1.0}
 %<*driver>
-\ProvidesFile{mucproc.dtx}
+\ProvidesFile{mucproc.dtx}[2017/02/22 v\mucprocVersion\ MUC-conference proceedings]
 %</driver>
 
-%<class>\NeedsTeXFormat{LaTeX2e}[2014/05/01]
-%<class>\ProvidesClass{mucproc}
 %<*class>
+\NeedsTeXFormat{LaTeX2e}[2014/05/01]
+\ProvidesClass{mucproc}
     [2017/02/20 v\mucprocVersion\ conference proceedings for the German MUC-conference]
 %</class>
 %
@@ -46,7 +46,7 @@
 \RecordChanges
 \usepackage{xparse}
 \begin{document}
-  \DocInput{mucproc.dtx}%Docinclude?
+  \DocInput{mucproc.dtx}
 \end{document}
 %</driver>
 % \fi
@@ -115,7 +115,7 @@
 % \subsection{Title creation}
 %
 % \DescribeMacro{\title}
-% The |\title| command behaves identically to most popular document classes. There may be linebreaks created with |\\| or |\newline| inside the argument.
+% The |\title| command behaves identically to most popular document classes. There may be line breaks created with |\\| or |\newline| inside the argument.
 % Other formatting macros shall not be used, since this argument is also used for the metadata of the final PDF-file.
 %
 % \DescribeMacro{\author}
@@ -125,8 +125,8 @@
 % \DescribeMacro{\thanks}
 % The |\thanks| command shall be used to add the corresponding institution.
 % It can be used similar to the standard \LaTeX{} definition, though it also can process an optional argument.
-% The optional argument takes a label to reference an institution of annother author.
-% This prevents multiple mention of institions.
+% The optional argument takes a label to reference an institution of another author.
+% This prevents multiple mention of institutions.
 % \DescribeMacro{\thanksref}
 % This macro is used to reference the labels set with the |\thanks| command.
 % The implementation of the institution reference is very different from the usual label/ref mechanism.
@@ -220,10 +220,10 @@
 %    \begin{macrocode}
 \ifMUC@final
     \bool_if:NTF \g_MUC@compatibility_mode {
-        \msg_new:nnn {mucproc} {compatibilty-final-error} {
-        forcefinal~ is~ not~ possible~ in~ compatibilty~ mode.\\\\
+        \msg_new:nnn {mucproc} {compatibility-final-error} {
+        forcefinal~ is~ not~ possible~ in~ compatibility~ mode.\\\\
         Update~ your~ TeX~ distribution~ and retry!}
-        \msg_error:nn {mucproc} {compatibilty-final-error}
+        \msg_error:nn {mucproc} {compatibility-final-error}
 
     }{
     \sys_if_engine_luatex:F {
@@ -294,7 +294,7 @@
 %    \end{macrocode}
 
 % \subsection{Bibliography setup}
-% The bibliography will be created using \textsf{biblatex} with \textsf{biber}-backend.
+% The bibliography will be created using \textsf{biblatex} with \textsf{biber} as backend.
 %    \begin{macrocode}
 \PassOptionsToPackage{backend=biber}{biblatex}
 \PassOptionsToPackage{citestyle=authoryear-comp}{biblatex}
@@ -401,7 +401,7 @@
     	}
     }
 %    \end{macrocode}
-% If no PDF/A shall be created, the |\maketitle| data will only be passed to the headmarks.
+% If no PDF/A shall be created, the |\maketitle| data will only be passed to the headline.
 %    \begin{macrocode}
 \else:
     \msg_new:nnn {mucproc} {no-pdfa}{The~ mucproc~ class~ won't~ create~ PDF/A-mode.}
@@ -493,7 +493,7 @@
 %    \end{macrocode}
 % \subsection{Typesetting the title}
 % As written before, |\maketitle| has to execute additional jobs.
-% Since the title fields also can contain other macros or even linebreaks, the expansion process has to be controlled carefully.
+% Since the title fields also can contain other macros or even line breaks, the expansion process has to be controlled carefully.
 %    \begin{macrocode}
 \renewcommand*{\maketitle}{
 \begingroup
@@ -551,7 +551,7 @@
 \newcaptionname{ngerman}{\MUCanonymousauthor}{Anonymisierte Fassung}
 \newcaptionname{english}{\MUCanonymousauthor}{anonymous version}
 \ifMUC@anonymous
-    \def\@author{Anonymisierte Fassung}
+    \def\@author{\MUCanonymousauthor}
     \def\author#1\relax
 %    \end{macrocode}
 % The |authoraddendum| environment shall create no output, if the anonymous mode is active.
@@ -698,7 +698,7 @@
 %\iffalse
 %</!font-clo>
 %<*font-clo>
-\ProvidesFile{mucfontsize10pt.clo}[2017/01/30 font size class option (10pt)]
+\ProvidesFile{mucfontsize10pt.clo}[2017/01/30 v1.0 mucproc font size class option (10pt)]
 
 \def\normalsize{%
   \@setfontsize\normalsize{10}{12bp}

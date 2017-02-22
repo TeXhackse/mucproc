@@ -20,7 +20,7 @@
 %% and version 1.3 or later is part of all distributions of LaTeX version
 %% 2005/12/01 or later.
 %% 
-\def\mucprocVersion{0.10}
+\def\mucprocVersion{1.0}
 
 \NeedsTeXFormat{LaTeX2e}[2014/05/01]
 \ProvidesClass{mucproc}
@@ -64,10 +64,10 @@
 \fi
 \ifMUC@final
     \bool_if:NTF \g_MUC@compatibility_mode {
-        \msg_new:nnn {mucproc} {compatibilty-final-error} {
-        forcefinal~ is~ not~ possible~ in~ compatibilty~ mode.\\\\
+        \msg_new:nnn {mucproc} {compatibility-final-error} {
+        forcefinal~ is~ not~ possible~ in~ compatibility~ mode.\\\\
         Update~ your~ TeX~ distribution~ and retry!}
-        \msg_error:nn {mucproc} {compatibilty-final-error}
+        \msg_error:nn {mucproc} {compatibility-final-error}
 
     }{
     \sys_if_engine_luatex:F {
@@ -297,7 +297,7 @@
 \newcaptionname{ngerman}{\MUCanonymousauthor}{Anonymisierte Fassung}
 \newcaptionname{english}{\MUCanonymousauthor}{anonymous version}
 \ifMUC@anonymous
-    \def\@author{Anonymisierte Fassung}
+    \def\@author{\MUCanonymousauthor}
     \def\author#1\relax
     \RequirePackage{comment}
     \excludecomment{authoraddendum}

@@ -1,5 +1,5 @@
 %%
-%% This is file `mucproc_demo.tex', it is a demonstration file for the mucproc.cls class.
+%% This is file `mucproc_demo.tex' v. 1.0 2017/02/22, it is a demonstration file for the mucproc.cls class.
 %% 
 %% Copyright (C) 2017 by Marei Peischl <TeX@mareipeischl.de>
 %% 
@@ -41,7 +41,7 @@
 
 %%%SyntaxHighlighting: Needs pygmentize installed and -shell-escape set. See minted-documentation for for information.
 %\usepackage{minted}
-%\setminted{bgcolor=black!10}
+%\setminted{bgcolor=black!10,tabsize=4}
 %\NewDocumentCommand{\inlinemint}{O{}mv}{\mintinline[#1]{#2}{#3}}
 %\usemintedstyle{friendly}
 
@@ -213,14 +213,14 @@ Für das Einbinden von Grafiken lädt die \textsf{mucproc}-Klasse das \textsf{gr
 \begin{minted}{latex}
 \begin{figure}
 \centering
-\includegraphics[width=3cm]{picture}
+\includegraphics[width=.25\linewidth]{picture}
 \caption{Bildunterschrift}
 \label{fig:example}
 \end{figure}
 \end{minted}
 \begin{figure}
 	\centering
-	\includegraphics[width=3cm]{picture}
+	\includegraphics[width=.25\linewidth]{picture}
 	\caption{Bildunterschrift}
 	\label{fig:example}
 \end{figure}
@@ -229,34 +229,25 @@ Bitte achten Sie bei allen Abbildungen auf eine hinreichend hohe Auflösung, d.\
 
 \LaTeX{} kennt verschiedene Mechanismen für die Erzeugung von Tabellen. Tabelle \ref{tab:example} zeigt eine Möglichkeit für die Erzeugung einer Tabelle, die sich der Textbreite anpasst. Hierfür wird das Paket \textsf{tabularx} und für die Linien mit verbessertem Spacing das \textsf{booktabs}-Paket benutzt.
 
-%TODO inhalt
-\begin{minted}{latex}
-\begin{table}
-\begin{tabularx}{\linewidth}{@{}lX@{}}
-\toprule
-\itshape Eintrag&Formatierung\\
-\midrule
-Institution${}+{}$Hochgestellt&Bei mehreren unterschiedlichen Institutionen nutzen Sie SHIFT+<ENTER> für einen manuellen Zeilenumbruch und hochgestellte Ziffern aus der Vorlage <Autor + Hochgestellt>. Die Einrichtungen können durch hochgestellte Zahlen den verschiedenen Autoren zugeordnet werden.\\
-Liste Einzug&Absätze in Aufzählungen oder Nummerierungen, ohne Abstand zum nächsten Element\\
-Liste Einzug m.\,A.&Absätze in Aufzählungen oder Nummerierungen, mit Abstand zum nächsten Element, angewendet am Listenende\\
-\bottomrule
-\end{tabularx}
-\caption{Tabellenunterschrift}
-\label{tab:example}
-\end{table}
-\end{minted}
 
-\begin{table}%TODO: Inhalt
-	\begin{tabularx}{\linewidth}{@{}lX@{}}
+\begin{table}
+	\begin{tabularx}{\linewidth}{@{}rX@{}}
 		\toprule
-		\itshape Syntax&Wirkung\\
+		\multicolumn{1}{c}{\itshape Syntax}&\itshape Wirkung\\
+		\midrule[\heavyrulewidth]
+		\multicolumn{2}{@{}l}{Tabellen mit fester Breite mithilfe von \textsf{tabularx}}\\
 		\midrule
-		&Bei mehreren unterschiedlichen Institutionen nutzen Sie SHIFT+<ENTER> für einen manuellen Zeilenumbruch und hochgestellte Ziffern aus der Vorlage <Autor + Hochgestellt>. Die Einrichtungen können durch hochgestellte Zahlen den verschiedenen Autoren zugeordnet werden.\\
-		Liste Einzug&Absätze in Aufzählungen oder Nummerierungen, ohne Abstand zum nächsten Element\\
-		Liste Einzug m.\,A.&Absätze in Aufzählungen oder Nummerierungen, mit Abstand zum nächsten Element, angewendet am Listenende\\
+		\texttt{tabularx}-Umgebung& Erhält als erstes Argument eine Längenangabe als Gesamtbreite der Tabelle. In der Spaltendefinition steht über die sonst möglichen Elemente noch der Spaltentyp \texttt{X} zur Verfügung.\\
+		\texttt{X}-Spaltentyp& Dieser Spaltentyp erhält die gesamte Rest-Breite. Alle anderen Spalten werden wie sonst auch gesetzt. Die Differenz zwischen der Gesamtbreite und der bei der Umgebung angegebenen Breite wird der \texttt{X}-Spalte zugewiesen. Bei mehreren \texttt{X}-Spalten wird der verfügbare Platz gleichmäßig unter allen aufgeteilt.\\
+		\midrule[\heavyrulewidth]
+		\multicolumn{2}{@{}l}{Weitere hilfreiche Befehle bei Tabellen}\\
+		\midrule
+		\texttt{@\{\}}& Diese Syntax ist in Standard-\LaTeX{} definiert. Sie überschreibt den Spaltenzwischenraum. In diesem Fall wird er entfernt, sodass die horizontalen Linien bündig mit den äußeren Spalten abschließen.\\
+		\texttt{\textbackslash{}midrule}& Dies ist ein neuer Linientyp für horizontale Linien in Tabelle. Er wird durch das \textsf{booktabs}-Paket bereitgestellt und besitzt im Vergleich zu \texttt{\textbackslash{}hline} ein verbessertes Spacing. Zudem kann die Liniendicke über ein optionales Argument eingestellt werden.\\
+		\texttt{\textbackslash{}top/bottomrule}& Variante von \texttt{\textbackslash{}midrule}, die andere Abstände lässt. Die \texttt{\textbackslash{}toprule} ist als obere Begrenzung der Tabelle gedacht (\texttt{\textbackslash{}bottomrule} als untere).\\
 		\bottomrule
 	\end{tabularx}
-	\caption{Tabellenunterschrift}
+	\caption{Tabellenunterschrift bei einer Beispieltabelle mit fester Breite}
 	\label{tab:example}
 \end{table}
 
