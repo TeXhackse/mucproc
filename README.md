@@ -18,10 +18,13 @@ The mucproc.cls is a document class to support the formatting guidelines for sub
 
 ------------------
 
-The Bundle consists of:
+The Bundle consists of
 mucproc.cls
 mucfontsize10pt.clo
 
 and the demonstration files
 mucproc_demo.tex
 mucproc_demo.bib
+
+as well as the example output
+mucproc_demo.pdf
