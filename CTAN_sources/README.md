@@ -1,5 +1,5 @@
 # mucproc
-conference proceedings for the **Mensch und Computer** (MUC) conference using LaTeX
+conference proceedings for the **Mensch und Computer** (MuC) conference using LaTeX
 
  Copyright (C) Marei Peischl <tex@mareipeischl.de>, 2017
 
@@ -18,7 +18,7 @@ The mucproc.cls is a document class to support the formatting guidelines for sub
 This work consists of the files mucproc.dtx and mucproc.ins and the derived files mucproc.cls, mucfontsize10pt.clo.
 
 A compileable demonstration file using the mucproc class can be found on github (https://github.com/Blubu/mucproc/).
-This example fullfils the formatting guidelines for the MUC-conference 2017.
+This example fullfils the formatting guidelines for MuC 2017.
 
 Files
 -----

@@ -24,7 +24,7 @@
 
 \NeedsTeXFormat{LaTeX2e}[2014/05/01]
 \ProvidesClass{mucproc}
-    [2017/02/20 v\mucprocVersion\ conference proceedings for the German MUC-conference]
+    [2017/02/20 v\mucprocVersion\ conference proceedings for the German MuC-conference]
 \RequirePackage{expl3}
 \ExplSyntaxOn
 \bool_new:N \g_MUC@compatibility_mode

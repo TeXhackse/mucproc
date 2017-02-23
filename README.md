@@ -1,5 +1,5 @@
 # mucproc
-conference proceedings for the **Mensch und Computer** (MUC) conference using LaTeX
+conference proceedings for the **Mensch und Computer** (MuC) conference using LaTeX
 
  Copyright (C) Marei Peischl <tex@mareipeischl.de>, 2017
 
@@ -28,3 +28,11 @@ mucproc_demo.bib
 
 as well as the example output
 mucproc_demo.pdf
+
+Images in the demo document based on clipart from openclipart.org (license:
+CC-0, https://creativecommons.org/publicdomain/zero/1.0/). Sources:
+https://openclipart.org/detail/122107/default-profile-picture (foto.png), https://openclipart.org/detail/3422/mouse
+(picture.png). The versions used in the demo document are also licensed under
+CC-0 (https://creativecommons.org/publicdomain/zero/1.0/)
+
+
