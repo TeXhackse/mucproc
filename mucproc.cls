@@ -20,7 +20,7 @@
 %% and version 1.3 or later is part of all distributions of LaTeX version
 %% 2005/12/01 or later.
 %% 
-\def\mucprocVersion{1.0}
+\def\mucprocVersion{1.01}
 
 \NeedsTeXFormat{LaTeX2e}[2014/05/01]
 \ProvidesClass{mucproc}
@@ -125,9 +125,9 @@
 \PassOptionsToPackage{citestyle=authoryear-comp}{biblatex}
 \PassOptionsToPackage{bibstyle=apa}{biblatex}
 \RequirePackage{biblatex}
-\DeclareLanguageMapping{american}{american-apa}
+\DeclareLanguageMapping{english}{english-apa}
 \DeclareLanguageMapping{ngerman}{ngerman-apa}
-\renewcaptionname{ngerman}{\refname}{Literaturverzeichnis}
+\defcaptionname{ngerman}{\refname}{Literaturverzeichnis}
 
 \renewcommand*{\nameyeardelim}{\addcomma\space}
 \bool_new:N \g_MUC@fontspec_bool

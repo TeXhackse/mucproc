@@ -22,7 +22,7 @@
 % \iffalse
 %
 %<*!font-clo>
-\def\mucprocVersion{1.0}
+\def\mucprocVersion{1.01}
 %<*driver>
 \ProvidesFile{mucproc.dtx}[2017/02/22 v\mucprocVersion\ MuC-conference proceedings]
 %</driver>
@@ -303,12 +303,12 @@
 %    \end{macrocode}
 % The APA-style requires a Language mapping. It is set for both supported main languages.
 %    \begin{macrocode}
-\DeclareLanguageMapping{american}{american-apa}
+\DeclareLanguageMapping{english}{english-apa}
 \DeclareLanguageMapping{ngerman}{ngerman-apa}
 %    \end{macrocode}
 % Set up additional Settings to get an equal output, like the Word-version.
 %    \begin{macrocode}
-\renewcaptionname{ngerman}{\refname}{Literaturverzeichnis}
+\defcaptionname{ngerman}{\refname}{Literaturverzeichnis}
 
 \renewcommand*{\nameyeardelim}{\addcomma\space}
 %    \end{macrocode}
