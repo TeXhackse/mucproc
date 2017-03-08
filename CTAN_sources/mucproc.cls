@@ -20,11 +20,11 @@
 %% and version 1.3 or later is part of all distributions of LaTeX version
 %% 2005/12/01 or later.
 %% 
-\def\mucprocVersion{1.01}
+\def\mucprocVersion{1.02}
 
 \NeedsTeXFormat{LaTeX2e}[2014/05/01]
 \ProvidesClass{mucproc}
-    [2017/03/01 v\mucprocVersion\ conference proceedings for the German MuC-conference]
+    [2017/03/08 v\mucprocVersion\ conference proceedings for the German MuC-conference]
 \RequirePackage{expl3}
 \ExplSyntaxOn
 \bool_new:N \g_MUC@compatibility_mode
@@ -127,7 +127,7 @@
 \RequirePackage{biblatex}
 \DeclareLanguageMapping{english}{english-apa}
 \DeclareLanguageMapping{ngerman}{ngerman-apa}
-\defcaptionname{ngerman}{\refname}{Literaturverzeichnis}
+\defcaptionname{ngerman,german}{\refname}{Literaturverzeichnis}
 
 \renewcommand*{\nameyeardelim}{\addcomma\space}
 \bool_new:N \g_MUC@fontspec_bool
@@ -294,11 +294,11 @@
 \global\let\thanksref\relax
 }
 
-\newcaptionname{ngerman}{\MUCanonymousauthor}{Anonymisierte Fassung}
-\newcaptionname{english}{\MUCanonymousauthor}{anonymous version}
 \ifMUC@anonymous
+\providecaptionname{english}{\MUCanonymousauthor}{anonymous~ version}
+\providecaptionname{german,ngerman}{\MUCanonymousauthor}{Anonymisierte~ Fassung}
     \def\@author{\MUCanonymousauthor}
-    \def\author#1\relax
+    \def\author#1{\relax}
     \RequirePackage{comment}
     \excludecomment{authoraddendum}
 \else

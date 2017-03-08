@@ -24,11 +24,6 @@
 
 \bibliography{mucproc_demo}
 
-\title{Formatierungsvorgaben für Beiträge\\
-	zur Mensch und Computer 2017}%Tragen Sie hier den Titel Ihrer Einreichung ein.
-\subtitle{\LaTeX-Version}%Bitte für die Einreichungen keinen Untertitel benutzen
-\author{Marei Peischl\thanks[inst1]{Abteilung, Institution}\and Vorname Name\thanks{Abteilung, Institution}\and Vorname Name\thanksref{inst1}}
-%Sofern zwei Autoren der gleichen Institution angehören, können Sie das optionale Argument von \thanks nutzen um ein Label auf eine Institution zu setzen. Diese kann anschließend mit \thanksref referenziert werden.
 
 
 %Für Tabellenbeispiel
@@ -50,7 +45,15 @@
 \newenvironment{minted}[2][]{\endgraf\verbatim}{\endverbatim}
 \NewDocumentCommand{\inlinemint}{omv}{\texttt{#3}}
 %%%%%%%%%%%%%%%%
-\begin{document}
+
+
+\begin{document}	
+	
+\title{Formatierungsvorgaben für Beiträge\\
+	zur Mensch und Computer 2017}%Tragen Sie hier den Titel Ihrer Einreichung ein.
+\subtitle{\LaTeX-Version}%Bitte für die Einreichungen keinen Untertitel benutzen
+\author{Marei Peischl\thanks[inst1]{Abteilung, Institution}\and Vorname Name\thanks{Abteilung, Institution}\and Vorname Name\thanksref{inst1}}
+
 	
 \maketitle
 
@@ -138,14 +141,14 @@ Falls Sie bei mehreren Autoren die selbe Institution angeben möchten, ist es m�
 Das optionale Argument von \inlinemint{latex}|thanks| entspricht in etwa einem Label. Es kann eine beliebige Zeichenkette ohne \LaTeX spezifische Sonderzeichen enthalten.
 
 \subsection{Anonymisierung für die Einreichung}
-Die Autoreninformationen werden für die Begutachtung gesondert im Konferenzmanagementsystem erfasst, um eine anonymisierte Begutachtung der Beiträge zu ermöglichen.
+Die Autoreninformationen werden für die Begutachtung gesondert im Konferenzmanagement"-system erfasst, um eine anonymisierte Begutachtung der Beiträge zu ermöglichen.
 
 Die Klasse \textsf{mucproc} verfügt hierfür über die Möglichkeit Ihren Beitrag \inlinemint{latex}|anonymous=true| zu anonymisieren. Setzen Sie hierfür die Option \inlinemint{latex}|anonymous=true| beim Laden der Dokumentenklasse.
 
 Wenn Ihr Beitrag angenommen wurde, können Sie über diesen Schalter die Ausgabe der Angaben für die endgültige Fassung wieder aktivieren.
 
 \subsection{Zusammenfassung}
-Die Zusammenfassung sollte nicht länger als zehn Zeilen sein und es den Lesern  ermöglichen, die Kerninhalte Ihres Beitrags in Kürze zu erfassen. Hierfür benutzt das Template die \texttt{abstract}-Umgebung mit der üblichen Syntax.
+Die Zusammenfassung sollte nicht länger als zehn Zeilen sein und es den Lesern  ermöglichen, die Kerninhalte Ihres Beitrags in Kürze zu erfassen. Hierfür benutzt das Template die \texttt{abstract}"=Umgebung mit der üblichen Syntax.
 
 
 \section{Sprachanpassung}
@@ -207,7 +210,7 @@ Setzen Sie Aufzählungen und -listungen über die \LaTeX-Standardmechanismen.
 
 
 \subsection{Abbildungen und Tabellen}
-Nutzen Sie für die Positionierung von Abbildungen und Tabellen die Standard-Umgebungen \inlinemint{latex}|figure| bzw. \inlinemint{latex}|table|. Verändern Sie, wenn möglich nicht die voreingestellten Positionierungsparameter. Setzen Sie Bild- und Tabellenunterschriften.
+Nutzen Sie für die Positionierung von Abbildungen und Tabellen die Standard-Umgebungen \inlinemint{latex}|figure| bzw. \inlinemint{latex}|table|. Verändern Sie, wenn möglich nicht die voreingestellten Positionierungs"-parameter. Setzen Sie Bild- und Tabellenunterschriften.
 
 Für das Einbinden von Grafiken lädt die \textsf{mucproc}-Klasse das \textsf{graphicx}-Paket. Abbildung \ref{fig:example} dient als Beispiel. Sie wurde über den Folgenden Code eingebunden:
 \begin{minted}{latex}
@@ -280,7 +283,7 @@ Der Aufbau der Datenbank ist identisch zu Datenbanken für die klassische Verwen
 
 Die Literaturverweise werden, wie auch das Literaturverzeichnis durch das \textsf{biblatex}-Paket mit 
 
-Literaturverweise erscheinen im Text in Klammern, z.\,B. \parencite{Nake.1993} oder bei wörtlichen Zitaten in der Form \parencite[S.~14ff.]{Nake.1993}. Verwenden Sie für die Verweise das Makro \inlinemint{latex}|\parencite|, welches über die folgende Syntax verfügt:
+Literaturverweise erscheinen im Text in Klammern, z.\,B. \parencite{Nake.1993} oder bei wörtlichen Zitaten in der Form \parencite[S.~14ff.]{Nake.1993}. Verwenden Sie für die Verweise \inlinemint{latex}|\parencite| mit der folgenden Syntax:
 
 \begin{minted}{latex}
 \parencite{Ackermann.1991}%für einfache Verweise

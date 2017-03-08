@@ -3,7 +3,7 @@ conference proceedings for the **Mensch und Computer** (MuC) conference using La
 
  Copyright (C) Marei Peischl <tex@mareipeischl.de>, 2017
 
- mucproc 2017/02/22 v1.0
+ mucproc 2017/03/08 v1.02
 
 ============================================================================
 
@@ -39,9 +39,11 @@ CC-0 (https://creativecommons.org/publicdomain/zero/1.0/)
 Versions
 --------
 
+**v1.02** (2017/03/08)
++ fixing bug in anonymous mode
+
 **v1.01** (2017/03/06)
 + small bugfix concerning the language selection
-
 
 **v1.0** (2017/02/22)
 + first official version mucproc
