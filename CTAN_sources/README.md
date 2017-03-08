@@ -32,8 +32,9 @@ and the derived files
 Versions
 --------
 
+**v1.01** (2017/03/01)
++ small bugfix concerning the support of English as main language
+
+
 *v1.0** (2017/02/22)
-
 + first official version mucproc
-
-

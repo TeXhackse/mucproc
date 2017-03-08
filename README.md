@@ -36,3 +36,13 @@ https://openclipart.org/detail/122107/default-profile-picture (foto.png), https:
 CC-0 (https://creativecommons.org/publicdomain/zero/1.0/)
 
 
+Versions
+--------
+
+**v1.01** (2017/03/06)
++ small bugfix concerning the language selection
+
+
+**v1.0** (2017/02/22)
++ first official version mucproc
+
