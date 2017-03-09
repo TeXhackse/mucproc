@@ -24,13 +24,13 @@
 %<*!font-clo>
 \def\mucprocVersion{1.02}
 %<*driver>
-\ProvidesFile{mucproc.dtx}[2017/03/08 v\mucprocVersion\ MuC-conference proceedings]
+\ProvidesFile{mucproc.dtx}[2017/03/09 v\mucprocVersion\ MuC-conference proceedings]
 %</driver>
 
 %<*class>
 \NeedsTeXFormat{LaTeX2e}[2014/05/01]
 \ProvidesClass{mucproc}
-    [2017/03/08 v\mucprocVersion\ conference proceedings for the German MuC-conference]
+    [2017/03/09 v\mucprocVersion\ conference proceedings for the German MuC-conference]
 %</class>
 %
 %<*driver>
@@ -83,7 +83,7 @@
 % \title{The \textsf{mucproc} class\thanks{This document
 %   corresponds to \textsf{mucproc}~\fileversion, dated \filedate.}}
 % \author{Marei Peischl \\ \texttt{tex@mareipeischl.de}}
-% \date{March 8, 2017}
+% \date{March 9, 2017}
 % \maketitle
 %
 % \section{Introduction}
@@ -559,7 +559,7 @@
     \def\@author{\MUCanonymousauthor}
     \def\author#1{\relax}
 %    \end{macrocode}
-% \changes{v1.02}{2017/03/08}{Bugfix of anonymous mode}
+% \changes{v1.02}{2017/03/09}{Bugfix of anonymous mode}
 % The |authoraddendum| environment shall create no output, if the anonymous mode is active.
 %    \begin{macrocode}
     \RequirePackage{comment}
@@ -581,18 +581,19 @@
         }{
             \includegraphics[#1]{#2}
         }
-        \end{minipage}\hspace{.5cm}%
+        \end{minipage}\hfill%
         \begin{minipage}[t]{\dimexpr\linewidth-3.5cm\relax}
         \vspace{0pt}
         {\usekomafont{authoraddendum}#3}\par\medskip%
         }
-        \usekomafont{authoraddendum}
+        \usekomafont{authoraddendum}\ignorespaces
         }{
         \IfNoValueF{#2}{\end{minipage}}
         \par
         }
 \fi
 %    \end{macrocode}
+% \changes{v1.02}{2017/03/09}{Fix boxwidth to no longer generate an overfull hbox.}
 % \end{environment}
 %
 %

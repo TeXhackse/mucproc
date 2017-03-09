@@ -19,8 +19,14 @@
 % !TeX TXS-program:bibliography = txs:///biber
 %%magic comment: einige Editoren verstehen diese Kommentare und starten lualatex anstatt der Standardeinstellung als Compiler
 
+\showboxdepth=\maxdimen
+\showboxbreadth=\maxdimen
 
-\documentclass[ngerman]{mucproc}
+\documentclass[ngerman,
+%	anonymous=true, %Für Anonymisierung der Einreichungen
+	]{mucproc}
+
+
 
 \bibliography{mucproc_demo}
 
@@ -44,6 +50,11 @@
 \usepackage{verbatim}% http://ctan.org/pkg/verbatim
 \newenvironment{minted}[2][]{\endgraf\verbatim}{\endverbatim}
 \NewDocumentCommand{\inlinemint}{omv}{\texttt{#3}}
+
+%Symbol-Font: Sonst sind die Symbolschriftarten nicht voll skalierbar
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}
+
 %%%%%%%%%%%%%%%%
 
 
@@ -191,15 +202,15 @@ Beispiel\footnote{Dies ist eine Beispielfußnote} erzeugt mit \inlinemint{latex}
 \subsection{Aufzählungen und Listen}
 Setzen Sie Aufzählungen und -listungen über die \LaTeX-Standardmechanismen.
 
-\begin{minipage}{.5\linewidth}
+\begin{minipage}{\dimexpr.5\linewidth-.5em\relax}
 \begin{minted}{latex}
 \begin{enumerate}%nummeriert
 \item Text für das 1. Element
 \item Text für ...
 \end{enumerate}
 \end{minted}
-\end{minipage}%
-\begin{minipage}{.5\linewidth}
+\end{minipage}\hfill%
+\begin{minipage}{\dimexpr.5\linewidth-.5em\relax}
 \begin{minted}{latex}
 \begin{itemize}
 \item Text für das 1. Element
@@ -281,7 +292,7 @@ Der Aufbau der Datenbank ist identisch zu Datenbanken für die klassische Verwen
 \end{minted}
 
 
-Die Literaturverweise werden, wie auch das Literaturverzeichnis durch das \textsf{biblatex}-Paket mit 
+Die Literaturverweise werden, wie auch das Literaturverzeichnis durch das \textsf{biblatex}-Paket mit Biber als Backend erzeugt.
 
 Literaturverweise erscheinen im Text in Klammern, z.\,B. \parencite{Nake.1993} oder bei wörtlichen Zitaten in der Form \parencite[S.~14ff.]{Nake.1993}. Verwenden Sie für die Verweise \inlinemint{latex}|\parencite| mit der folgenden Syntax:
 
@@ -315,8 +326,7 @@ biber --output_format=bibtex --output_resolve <filename>.bcf
 Die dadurch erzeugte verkleinerte Datenbank heißt \texttt{<filename>\_biber.bib} und kann dann für die Verwendung beliebig umbenannt werden.
 
 \section{Schlussteil}
-Der Schlussteil Ihres Beitrags umfasst das Literaturverzeichnis und (nur in der endgültigen Fassung!) eventuelle Danksagungen und die Kontaktinformationen der Autoren. Für die Überschriften im Schlussteil sollen nicht-nummerierte Unterüberschriften (\inlinemint{latex}|\subsection*{}|) verwendet werden.
-
+Der Schlussteil Ihres Beitrags umfasst das Literaturverzeichnis und (nur in der endgültigen Fassung!) eventuelle Danksagungen und die Kontaktinformationen der Autoren. Für die Überschriften im Schlussteil sollen nicht-nummerierte Unterüberschriften (\inlinemint{latex}|\subsection*|) verwendet werden.
 
 \subsection*{Danksagung}
 Wir danken Martin-Christoph Kindsmüller, Thilo Paul-Stueve, Claudia Völker, Andreas Auinger und Jürgen Ziegler für die Bereitstellung der Vorlagen der vorangegangen \enquote{Mensch und Computer}-Konferenzen.
@@ -353,7 +363,8 @@ Die \textsf{mucproc}-Klasse stellt für diesen Mechanismus die \texttt{authoradd
 \end{authoraddendum}
 
 \begin{authoraddendum}[foto]{Nachname, Vorname}
-Kurze Vita. Die Beschreibung der Person sollte sich auf max. 10 Zeilen beschränken
+	Kurze Vita. Die Beschreibung der Person sollte sich auf max. 10 Zeilen beschränken
 \end{authoraddendum}
+
 
 \end{document}

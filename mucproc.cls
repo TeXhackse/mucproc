@@ -24,7 +24,7 @@
 
 \NeedsTeXFormat{LaTeX2e}[2014/05/01]
 \ProvidesClass{mucproc}
-    [2017/03/08 v\mucprocVersion\ conference proceedings for the German MuC-conference]
+    [2017/03/09 v\mucprocVersion\ conference proceedings for the German MuC-conference]
 \RequirePackage{expl3}
 \ExplSyntaxOn
 \bool_new:N \g_MUC@compatibility_mode
@@ -314,12 +314,12 @@
         }{
             \includegraphics[#1]{#2}
         }
-        \end{minipage}\hspace{.5cm}%
+        \end{minipage}\hfill%
         \begin{minipage}[t]{\dimexpr\linewidth-3.5cm\relax}
         \vspace{0pt}
         {\usekomafont{authoraddendum}#3}\par\medskip%
         }
-        \usekomafont{authoraddendum}
+        \usekomafont{authoraddendum}\ignorespaces
         }{
         \IfNoValueF{#2}{\end{minipage}}
         \par

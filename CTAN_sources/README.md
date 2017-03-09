@@ -3,7 +3,7 @@ conference proceedings for the **Mensch und Computer** (MuC) conference using La
 
  Copyright (C) Marei Peischl <tex@mareipeischl.de>, 2017
 
- mucproc 2017/03/08 v1.02
+ mucproc 2017/03/09 v1.02
 
 ***************************************************************************
 
@@ -31,8 +31,9 @@ and the derived files
 
 Versions
 --------
-**v1.02** (2017/03/08)
+**v1.02** (2017/03/09)
 + fixing bug in anonymous mode
++ fixing authoraddendum to no longer create bad boxes
 
 **v1.01** (2017/03/01)
 + small bugfix concerning the support of English as main language
