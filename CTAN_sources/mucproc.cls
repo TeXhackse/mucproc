@@ -20,7 +20,7 @@
 %% and version 1.3 or later is part of all distributions of LaTeX version
 %% 2005/12/01 or later.
 %% 
-\def\mucprocVersion{1.02}
+\def\mucprocVersion{1.03}
 
 \NeedsTeXFormat{LaTeX2e}[2014/05/01]
 \ProvidesClass{mucproc}
@@ -208,11 +208,13 @@
         \endgroup
     }
 \fi:
-\clist_new:N \l_MUC@thanks_clist
+\clist_new:N \g_MUC@thanks_clist
+\clist_new:N \g_MUC@thanksNumber_clist
+\box_new:N \g_MUC@author_box
 \cs_set:Nn \MUC@thanks:nn {
-    \clist_gput_right:Nn \l_MUC@thanks_clist
-        {{#2\def\@thefnmark{#1}\@makefnmark}
-    }}
+    \clist_gput_right:Nn \g_MUC@thanks_clist {{#2}}
+\clist_gput_right:Nn \g_MUC@thanksNumber_clist {#1}
+}
 \bool_if:NTF \g_MUC@compatibility_mode
 {\NewDocumentCommand{\MUC@thanks}{om}{
     \footnotemark%
@@ -254,7 +256,19 @@
 }
 }
 \newcommand*\typeset@MUC@thanks {
-    \clist_use:Nn \l_MUC@thanks_clist {\rule{0pt}{0pt}\\}}
+\if_predicate:w \int_compare_p:n {\clist_count:N \g_MUC@thanks_clist > 1}
+   \int_step_inline:nnnn {1} {1} {\clist_count:N \g_MUC@thanks_clist-1}
+        {
+       \clist_item:Nn \g_MUC@thanks_clist {##1}
+       {\def\@thefnmark{\clist_item:Nn \g_MUC@thanksNumber_clist {##1}}\@makefnmark}
+       {\rule{0pt}{0pt}\\}
+        }
+   \clist_item:Nn \g_MUC@thanks_clist {\clist_count:N \g_MUC@thanks_clist}
+   {\def\@thefnmark{\clist_item:Nn \g_MUC@thanksNumber_clist {\clist_count:N \g_MUC@thanks_clist}}\@makefnmark}
+\else:
+     \clist_item:Nn \g_MUC@thanks_clist {1}
+\fi:
+}
 \renewcommand*{\maketitle}{
 \begingroup
 \DeclareExpandableDocumentCommand{\thanks}{om}{}
@@ -276,7 +290,14 @@
 {%
 \usekomafont{author}{%
 \lineskip .5em%
-\@author
+            \hbox_gset:Nn \g_MUC@author_box {\@author}
+            \int_compare:nTF {\clist_count:N \g_MUC@thanks_clist > 1}
+                {\box_use:N \g_MUC@author_box}
+                {
+                \DeclareExpandableDocumentCommand{\thanks}{om}{}
+                \DeclareExpandableDocumentCommand{\thanksref}{m}{}
+                \@author
+                }
 \par
 }%
 }%

@@ -22,7 +22,7 @@
 % \iffalse
 %
 %<*!font-clo>
-\def\mucprocVersion{1.02}
+\def\mucprocVersion{1.03}
 %<*driver>
 \ProvidesFile{mucproc.dtx}[2017/03/09 v\mucprocVersion\ MuC-conference proceedings]
 %</driver>
@@ -426,21 +426,30 @@
 % The title creation process also invokes the mechanism to pass the title data to headline and metadata.
 % It can be initialized calling |\maketitle|.
 % \subsection{Institution footnotes}
+% \label{sec:thanks}
+% \changes{v1.03}{2017/07/30}{Add mechanism to hide the footnotemarks if only one institution was given.}
 % The MuC formatting guidelines request the institutions typeset similar to footnotes, though they shouldn't be placed at the bottom of the page.
 % The standard footnote mechanism is quite complicated, though we use the \LaTeX3 clist datatype to create a special mechanism implementing these ``footnotes''.
 % The mechanism is called inside |\maketitle| but created outside of that macro definition to leave the code more readable.
 %
-% All Arguments of the |\thanks| command will be saved in the comma list called |\l_MUC@thanks_clist|.
+% The text specifying the institution will be saved in a comma list called |\l_MUC@thanks_clist|.
+% To be able to use the footnote numbers independently a second comma list has been added to take care of the numbers.
 %    \begin{macrocode}
-\clist_new:N \l_MUC@thanks_clist
+\clist_new:N \g_MUC@thanks_clist
+\clist_new:N \g_MUC@thanksNumber_clist
+%    \end{macrocode}
+% Additionally the mechanism to distinguish the mode hiding the footnotemarks needs a box saving the author content including the footnotemarks.
+% This box will be used to typeset the |\@author| command without already showing up.
+%    \begin{macrocode}
+\box_new:N \g_MUC@author_box
 %    \end{macrocode}
 % The value of the footnote counter has to be expanded when the |\thanks| macro is called. Otherwise the footnotemarks might not match.
 % To achieve this expansion order the |\MUC@thanks:nn| command takes the counter value as first argument and the institution name as second.
 %    \begin{macrocode}
 \cs_set:Nn \MUC@thanks:nn {
-    \clist_gput_right:Nn \l_MUC@thanks_clist
-        {{#2\def\@thefnmark{#1}\@makefnmark}
-    }}
+    \clist_gput_right:Nn \g_MUC@thanks_clist {{#2}}
+	\clist_gput_right:Nn \g_MUC@thanksNumber_clist {#1}
+}
 %    \end{macrocode}
 % Inside the real |\thanks| macro the first argument will be expanded directly.
 % Additionally |\MUC@thanks| sets its own first (optional) argument as a label for the property list |\g_MUC@InstRef_prof|.
@@ -491,10 +500,31 @@
 }
 }
 %    \end{macrocode}
-% After the title has been set, the institutional notes shall be typeset.
+% After the title has been placed, the institutional notes shall be typeset.
 %    \begin{macrocode}
 \newcommand*\typeset@MUC@thanks {
-    \clist_use:Nn \l_MUC@thanks_clist {\rule{0pt}{0pt}\\}}
+	\if_predicate:w \int_compare_p:n {\clist_count:N \g_MUC@thanks_clist > 1}
+%    \end{macrocode}
+% If the comma list |\g_MUC@thanks_clist| contains more than one item, this macro shall also show the footnotemarks for the connection between authors and institutions.
+%    \begin{macrocode}
+	   \int_step_inline:nnnn {1} {1} {\clist_count:N \g_MUC@thanks_clist-1}
+        {
+	       \clist_item:Nn \g_MUC@thanks_clist {##1}
+	       {\def\@thefnmark{\clist_item:Nn \g_MUC@thanksNumber_clist {##1}}\@makefnmark}
+	       {\rule{0pt}{0pt}\\}
+        }
+%    \end{macrocode}
+% To supress the linebreak after the last institution the last entry is added after this loop.
+%    \begin{macrocode}
+	   \clist_item:Nn \g_MUC@thanks_clist {\clist_count:N \g_MUC@thanks_clist}
+	   {\def\@thefnmark{\clist_item:Nn \g_MUC@thanksNumber_clist {\clist_count:N \g_MUC@thanks_clist}}\@makefnmark}
+	\else:
+%    \end{macrocode}
+% This branch will be used if only one institution has been given. It supresses the footnotemarks.
+%    \begin{macrocode}
+    	\clist_item:Nn \g_MUC@thanks_clist {1}
+	\fi:
+}
 %    \end{macrocode}
 % \subsection{Typesetting the title}
 % As written before, |\maketitle| has to execute additional jobs.
@@ -530,7 +560,19 @@
 	{%
 		\usekomafont{author}{%
 			\lineskip .5em%
-				\@author
+%    \end{macrocode}
+% The output of |\@author| should be different if only one institution is present (as already mentioned in section \ref{sec:thanks}).
+% Therefore the usual output will be stored in |\g_MUC@author_box| but will only show up if the footnotes are necessary.
+% Otherwise the definitions of |\thanks| and |\thanksref| will be relaxed and |\@author| will be reexpanded.
+%    \begin{macrocode}
+            \hbox_gset:Nn \g_MUC@author_box {\@author}
+            \int_compare:nTF {\clist_count:N \g_MUC@thanks_clist > 1}
+                {\box_use:N \g_MUC@author_box}
+                {
+                \DeclareExpandableDocumentCommand{\thanks}{om}{}
+                \DeclareExpandableDocumentCommand{\thanksref}{m}{}
+                \@author
+                }
 		\par
 		}%
 	}%
