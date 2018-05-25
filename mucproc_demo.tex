@@ -52,8 +52,14 @@
 \NewDocumentCommand{\inlinemint}{omv}{\texttt{#3}}
 
 %Symbol-Font: Sonst sind die Symbolschriftarten nicht voll skalierbar
+%Dies ist nur bei der Verwendung von OpenType-Schriftarten notwendig. Bei Verwendung von pdflatex dürfen die folgenden beiden Zeilen nicht verwendet werden.
+\usepackage{iftex}
+\ifPDFTeX
+\else
 \usepackage{unicode-math}
 \setmathfont{Latin Modern Math}
+\fi
+
 
 %%%%%%%%%%%%%%%%
 
